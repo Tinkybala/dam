@@ -1,0 +1,24 @@
+HI! PUT YOUR NAME ON THE ONE YOU WANT TO DO! CAN DO OTHER METHODS TOO!
+
+Content-Based Filtering (User-Item) siyuan
+- Each item is described by a feature vector (TF-IDF of metadata)
+- Each user is described by a vector based on the items he likes and dislikes (example: weighted average)
+- Use vector distance metrics to determine items with highest similarity 
+
+
+Collaborative Filtering
+Neighbourhood-based (user-user)
+- User ratings act as a user representation; no need feature engineering
+- Use vector distance metrics to determine similar users (KNN)
+- look for the items that each nearest neighbor likes
+- compute a score for each item, sort by score
+
+Neighbourhood-based (item-item) michael
+- Each item is represented by the users that liked it
+- Use vector distance metrics to determine similar items
+- For an item i, check each user's liked items and compare similarity to item i
+- Take weighted average of similarity * rating to predict user's score for item i
+
+Model-based (user-user)
+- Matrix Decomposition 
+- Can explore deep learning methods if interested
