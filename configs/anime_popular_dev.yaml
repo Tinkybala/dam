@@ -1,0 +1,6 @@
+model: popular
+artifacts_dir: ../artifacts/anime-r7
+output_dir: ../results/anime-popular-dev
+seed: 42
+development_users_file: development_users.parquet
+evaluate_test: false

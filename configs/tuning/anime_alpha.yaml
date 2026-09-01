@@ -1,0 +1,8 @@
+name: anime-confidence-alpha
+output_root: ../../results/tuning/anime-alpha
+gpus: [0, 1]
+base_configs:
+  - path: ../anime_weighted_neumf_dev.yaml
+    grid:
+      confidence_alpha: [0.0, 0.5, 1.0, 2.0]
+

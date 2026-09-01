@@ -1,0 +1,14 @@
+model: bpr
+artifacts_dir: ../artifacts/anime-r7
+output_dir: ../results/anime-bpr-dev
+seed: 42
+device: auto
+development_users_file: development_users.parquet
+embedding_dim: 32
+learning_rate: 0.001
+l2: 0.00001
+batch_size: 4096
+eval_batch_size: 65536
+negatives_per_positive: 4
+epochs: 15
+early_stopping_patience: 3

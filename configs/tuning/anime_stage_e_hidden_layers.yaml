@@ -1,0 +1,15 @@
+name: anime-stage-e-hidden-layers
+output_root: ../../results/tuning/anime-stage-e-hidden-layers
+gpus: [0, 1]
+require_equal_trial_count: true
+base_configs:
+  - path: ../selected/anime_mlp_stage_d.yaml
+    grid:
+      hidden_layers:
+        - [64, 32, 16, 8]
+        - [128, 64, 32]
+  - path: ../selected/anime_neumf_stage_d.yaml
+    grid:
+      hidden_layers:
+        - [64, 32, 16, 8]
+        - [128, 64, 32]
