@@ -1,0 +1,16 @@
+model: gmf
+artifacts_dir: ../../artifacts/anime-r7
+output_dir: ../../results/final/anime-gmf-seed-44
+seed: 44
+device: auto
+positive_threshold: 7
+maximum_rating: 10
+embedding_dim: 16
+learning_rate: 0.001
+l2: 0.000001
+positive_batch_size: 2048
+eval_batch_size: 65536
+negatives_per_positive: 8
+epochs: 20
+early_stopping_patience: 5
+evaluate_test: false

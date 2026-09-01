@@ -1,0 +1,18 @@
+model: mlp
+artifacts_dir: ../../artifacts/anime-r7
+output_dir: ../../results/final/anime-mlp-seed-42
+seed: 42
+device: auto
+positive_threshold: 7
+maximum_rating: 10
+embedding_dim: 64
+hidden_layers: [128, 64, 32]
+dropout: 0.0
+learning_rate: 0.001
+l2: 0.00001
+positive_batch_size: 2048
+eval_batch_size: 65536
+negatives_per_positive: 8
+epochs: 20
+early_stopping_patience: 5
+evaluate_test: false

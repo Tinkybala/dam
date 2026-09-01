@@ -1,0 +1,5 @@
+model: popular
+artifacts_dir: ../../artifacts/anime-r7
+output_dir: ../../results/final/anime-popular
+seed: 42
+evaluate_test: false
