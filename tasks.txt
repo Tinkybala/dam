@@ -19,6 +19,6 @@ Neighbourhood-based (item-item) michael
 - For an item i, check each user's liked items and compare similarity to item i
 - Take weighted average of similarity * rating to predict user's score for item i
 
-Model-based (user-user)
+Model-based (user-user) Lijie
 - Matrix Decomposition 
 - Can explore deep learning methods if interested
