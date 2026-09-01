@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+from src.train import _git_commit
 from src.tune import load_sweep_plan
 
 
@@ -89,3 +90,16 @@ def test_sweep_enforces_equal_model_budgets(tmp_path):
 
     with pytest.raises(ValueError, match="unequal tuning budgets"):
         load_sweep_plan(tmp_path / "plan.yaml")
+
+
+def test_source_commit_override_is_recorded_verbatim(monkeypatch, tmp_path):
+    value = "deployment-commit-without-a-local-git-directory"
+    monkeypatch.setenv("SOURCE_COMMIT", value)
+
+    assert _git_commit(tmp_path) == value
+
+
+def test_commit_is_null_only_without_override_outside_git(monkeypatch, tmp_path):
+    monkeypatch.delenv("SOURCE_COMMIT", raising=False)
+
+    assert _git_commit(tmp_path) is None

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import time
 from pathlib import Path
@@ -415,6 +416,8 @@ def _resolve(config_path: Path, value: str) -> Path:
 
 
 def _git_commit(workdir: Path) -> str | None:
+    if "SOURCE_COMMIT" in os.environ:
+        return os.environ["SOURCE_COMMIT"]
     try:
         return subprocess.run(
             ["git", "rev-parse", "HEAD"],
