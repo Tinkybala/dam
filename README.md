@@ -4,6 +4,10 @@ This branch contains lijie's model-based collaborative-filtering workstream. The
 first implemented milestone is the reproducible data and evaluation contract for
 the Anime Recommendations Database.
 
+Repository-facing experiment checkpoints are recorded in
+[`EXPERIMENTS.md`](EXPERIMENTS.md). Generated datasets, predictions,
+checkpoints, and raw result directories remain outside Git.
+
 ## Setup
 
 Use Python 3.11 or newer in a virtual environment:
