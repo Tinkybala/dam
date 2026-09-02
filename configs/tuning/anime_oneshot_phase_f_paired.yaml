@@ -4,7 +4,7 @@ gpus: [0, 1]
 require_equal_trial_count: true
 base_configs:
   # Locked BPR control, evaluated with the common 30-epoch/patience-5 budget.
-  - path: ../final/anime_bpr_final_seed42.yaml
+  - path: ../selected/anime_bpr_stage_d.yaml
     grid:
       gpu_sampling: [true]
       early_stopping_patience: [5]
@@ -22,7 +22,7 @@ base_configs:
       negatives_per_positive: [24]
       seed: [42, 43, 44]
   # Locked standard NeuMF control, evaluated with the common budget.
-  - path: ../final/anime_neumf_final_seed42.yaml
+  - path: ../selected/anime_neumf_stage_e.yaml
     grid:
       early_stopping_patience: [5]
       epochs: [30]
