@@ -1,0 +1,39 @@
+name: anime-oneshot-phase-f-paired
+output_root: ../../results/tuning/anime-oneshot-phase-f-paired
+gpus: [0, 1]
+require_equal_trial_count: true
+base_configs:
+  # Locked BPR control, evaluated with the common 30-epoch/patience-5 budget.
+  - path: ../final/anime_bpr_final_seed42.yaml
+    grid:
+      early_stopping_patience: [5]
+      epochs: [30]
+      seed: [42, 43, 44]
+  # Phase C BPR candidate.
+  - path: ../selected/anime_bpr_stage_d.yaml
+    grid:
+      batch_size: [4096]
+      early_stopping_patience: [5]
+      embedding_dim: [128]
+      epochs: [30]
+      learning_rate: [0.00075]
+      negatives_per_positive: [24]
+      seed: [42, 43, 44]
+  # Locked standard NeuMF control, evaluated with the common budget.
+  - path: ../final/anime_neumf_final_seed42.yaml
+    grid:
+      early_stopping_patience: [5]
+      epochs: [30]
+      seed: [42, 43, 44]
+  # Phase D weighted NeuMF candidate selected at alpha=0.5.
+  - path: ../selected/anime_neumf_stage_e.yaml
+    grid:
+      confidence_alpha: [0.5]
+      early_stopping_patience: [5]
+      embedding_dim: [64]
+      epochs: [30]
+      learning_rate: [0.002]
+      model: [weighted_neumf]
+      negatives_per_positive: [24]
+      positive_batch_size: [2048]
+      seed: [42, 43, 44]
