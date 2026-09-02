@@ -92,6 +92,54 @@ def iter_bpr_batches(
             yield batch_users, batch_positives, negatives
 
 
+def iter_bpr_batches_torch(
+    users: np.ndarray,
+    positive_items: np.ndarray,
+    observed_codes: np.ndarray,
+    item_count: int,
+    batch_size: int,
+    negatives_per_positive: int,
+    device: torch.device,
+) -> Iterator[tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
+    """Yield BPR triples with shuffling and rejection sampling on ``device``.
+
+    This keeps the same uniform-unseen-negative protocol as
+    :func:`iter_bpr_batches`, while avoiding a NumPy round-trip for CUDA
+    training. Torch's seeded RNG is used for the device-side draws.
+    """
+    if len(users) != len(positive_items):
+        raise ValueError("users and positive_items must have the same length")
+    if min(item_count, batch_size, negatives_per_positive) < 1:
+        raise ValueError("sampling dimensions must be positive")
+
+    user_tensor = torch.as_tensor(users, dtype=torch.long, device=device)
+    positive_tensor = torch.as_tensor(positive_items, dtype=torch.long, device=device)
+    observed_tensor = torch.as_tensor(observed_codes, dtype=torch.long, device=device)
+    for _ in range(negatives_per_positive):
+        order = torch.randperm(len(user_tensor), device=device)
+        for start in range(0, len(order), batch_size):
+            indices = order[start : start + batch_size]
+            batch_users = user_tensor.index_select(0, indices)
+            batch_positives = positive_tensor.index_select(0, indices)
+            negatives = torch.randint(
+                item_count, (len(indices),), dtype=torch.long, device=device
+            )
+            invalid = _torch_codes_present(
+                observed_tensor, batch_users * item_count + negatives
+            )
+            while bool(invalid.any()):
+                negatives[invalid] = torch.randint(
+                    item_count,
+                    (int(invalid.sum().item()),),
+                    dtype=torch.long,
+                    device=device,
+                )
+                invalid = _torch_codes_present(
+                    observed_tensor, batch_users * item_count + negatives
+                )
+            yield batch_users, batch_positives, negatives
+
+
 def iter_pointwise_batches(
     users: np.ndarray,
     positive_items: np.ndarray,
@@ -171,6 +219,16 @@ def _codes_present(sorted_codes: np.ndarray, queries: np.ndarray) -> np.ndarray:
     present[valid_positions] = (
         sorted_codes[positions[valid_positions]] == queries[valid_positions]
     )
+    return present
+
+
+def _torch_codes_present(sorted_codes: torch.Tensor, queries: torch.Tensor) -> torch.Tensor:
+    if sorted_codes.numel() == 0:
+        return torch.zeros_like(queries, dtype=torch.bool)
+    positions = torch.searchsorted(sorted_codes, queries)
+    valid_positions = positions < len(sorted_codes)
+    safe_positions = positions.clamp(max=max(len(sorted_codes) - 1, 0))
+    present = valid_positions & sorted_codes.index_select(0, safe_positions).eq(queries)
     return present
 
 

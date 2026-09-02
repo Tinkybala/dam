@@ -6,6 +6,7 @@ base_configs:
   # Locked BPR control, evaluated with the common 30-epoch/patience-5 budget.
   - path: ../final/anime_bpr_final_seed42.yaml
     grid:
+      gpu_sampling: [true]
       early_stopping_patience: [5]
       epochs: [30]
       seed: [42, 43, 44]
@@ -16,6 +17,7 @@ base_configs:
       early_stopping_patience: [5]
       embedding_dim: [128]
       epochs: [30]
+      gpu_sampling: [true]
       learning_rate: [0.00075]
       negatives_per_positive: [24]
       seed: [42, 43, 44]

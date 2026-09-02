@@ -6,6 +6,7 @@ import torch
 from src.models import BPRMatrixFactorization, GMF, MLP, MostPopular, NeuMF
 from src.training import (
     iter_bpr_batches,
+    iter_bpr_batches_torch,
     iter_pointwise_batches,
     normalized_confidence_weights,
 )
@@ -56,6 +57,28 @@ def test_bpr_sampler_never_returns_observed_pairs():
     )
     assert len(sampled_codes) == len(users) * 3
     assert not np.isin(sampled_codes, observed_codes).any()
+
+
+def test_torch_bpr_sampler_never_returns_observed_pairs():
+    users = np.array([0, 0, 1, 1], dtype=np.int64)
+    positives = np.array([0, 1, 1, 2], dtype=np.int64)
+    observed_codes = np.array([0, 1, 6, 7], dtype=np.int64)
+    batches = list(
+        iter_bpr_batches_torch(
+            users,
+            positives,
+            observed_codes,
+            item_count=5,
+            batch_size=2,
+            negatives_per_positive=3,
+            device=torch.device("cpu"),
+        )
+    )
+    sampled_codes = torch.cat(
+        [batch_users * 5 + negatives for batch_users, _, negatives in batches]
+    )
+    assert len(sampled_codes) == len(users) * 3
+    assert not torch.isin(sampled_codes, torch.from_numpy(observed_codes)).any()
 
 
 def test_bpr_sampler_validates_lengths():

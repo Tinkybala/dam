@@ -17,6 +17,7 @@ from .evaluate import aggregate_metrics
 from .models import BPRMatrixFactorization, GMF, MLP, MostPopular, NeuMF
 from .training import (
     iter_bpr_batches,
+    iter_bpr_batches_torch,
     iter_pointwise_batches,
     load_mapping,
     map_interactions,
@@ -160,23 +161,41 @@ def _run_bpr(
     stale_epochs = 0
 
     training_started = time.perf_counter()
+    gpu_sampling = device.type == "cuda" and bool(config.get("gpu_sampling", True))
     for epoch in range(1, epochs + 1):
         model.train()
         loss_sum = 0.0
         example_count = 0
         epoch_started = time.perf_counter()
-        for batch_users, batch_positives, batch_negatives in iter_bpr_batches(
-            train_users,
-            train_items,
-            codes,
-            item_count,
-            batch_size,
-            negatives,
-            rng,
-        ):
-            users_tensor = torch.from_numpy(batch_users).to(device)
-            positives_tensor = torch.from_numpy(batch_positives).to(device)
-            negatives_tensor = torch.from_numpy(batch_negatives).to(device)
+        if gpu_sampling:
+            batches = iter_bpr_batches_torch(
+                train_users,
+                train_items,
+                codes,
+                item_count,
+                batch_size,
+                negatives,
+                device,
+            )
+        else:
+            batches = iter_bpr_batches(
+                train_users,
+                train_items,
+                codes,
+                item_count,
+                batch_size,
+                negatives,
+                rng,
+            )
+        for batch_users, batch_positives, batch_negatives in batches:
+            if gpu_sampling:
+                users_tensor = batch_users
+                positives_tensor = batch_positives
+                negatives_tensor = batch_negatives
+            else:
+                users_tensor = torch.from_numpy(batch_users).to(device)
+                positives_tensor = torch.from_numpy(batch_positives).to(device)
+                negatives_tensor = torch.from_numpy(batch_negatives).to(device)
             optimizer.zero_grad(set_to_none=True)
             loss = model.pairwise_loss(users_tensor, positives_tensor, negatives_tensor)
             if not torch.isfinite(loss):
@@ -226,6 +245,7 @@ def _run_bpr(
         "device": str(device),
         "epochs_completed": len(history),
         "training_runtime_seconds": time.perf_counter() - training_started,
+        "gpu_sampling": gpu_sampling,
         "history": history,
         "validation": aggregate_metrics(validation_predictions, k=10),
     }
