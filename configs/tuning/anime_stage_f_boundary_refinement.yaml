@@ -1,0 +1,21 @@
+name: anime-stage-f-boundary-refinement
+output_root: ../../results/tuning/anime-stage-f-boundary-refinement
+gpus: [0, 1]
+require_equal_trial_count: true
+base_configs:
+  - path: ../selected/anime_bpr_stage_d.yaml
+    grid:
+      learning_rate: [0.001, 0.002]
+      negatives_per_positive: [8, 12, 16]
+  - path: ../selected/anime_gmf_stage_d.yaml
+    grid:
+      learning_rate: [0.001, 0.002]
+      negatives_per_positive: [8, 12, 16]
+  - path: ../selected/anime_mlp_stage_e.yaml
+    grid:
+      learning_rate: [0.001, 0.002]
+      negatives_per_positive: [8, 12, 16]
+  - path: ../selected/anime_neumf_stage_e.yaml
+    grid:
+      learning_rate: [0.001, 0.002]
+      negatives_per_positive: [8, 12, 16]
