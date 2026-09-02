@@ -1,0 +1,13 @@
+[project]
+name = "dam" 
+version = "0.1.0"
+description = "ntu dam project 1"
+requires-python = ">=3.10"
+dependencies = [
+    "kagglehub[hf-datasets]>=1.0.2",
+]
+
+[dependency-groups]
+dev = [
+    "jupyterlab>=4.6.3",
+]
