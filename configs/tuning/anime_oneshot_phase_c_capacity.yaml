@@ -1,0 +1,21 @@
+name: anime-oneshot-phase-c-capacity
+output_root: ../../results/tuning/anime-oneshot-phase-c-capacity
+gpus: [0, 1]
+require_equal_trial_count: true
+base_configs:
+  - path: ../selected/anime_bpr_stage_d.yaml
+    grid:
+      batch_size: [2048, 4096]
+      early_stopping_patience: [5]
+      embedding_dim: [64, 128]
+      epochs: [30]
+      learning_rate: [0.00075]
+      negatives_per_positive: [24]
+  - path: ../selected/anime_neumf_stage_e.yaml
+    grid:
+      early_stopping_patience: [5]
+      embedding_dim: [32, 64]
+      epochs: [30]
+      learning_rate: [0.002]
+      negatives_per_positive: [24]
+      positive_batch_size: [1024, 2048]
