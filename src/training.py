@@ -192,6 +192,72 @@ def iter_pointwise_batches(
         )
 
 
+def iter_pointwise_batches_torch(
+    users: np.ndarray,
+    positive_items: np.ndarray,
+    positive_weights: np.ndarray,
+    observed_codes: np.ndarray,
+    item_count: int,
+    positive_batch_size: int,
+    negatives_per_positive: int,
+    device: torch.device,
+) -> Iterator[tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]]:
+    """Yield pointwise batches with sampling and shuffling on ``device``."""
+    if not (len(users) == len(positive_items) == len(positive_weights)):
+        raise ValueError("pointwise input arrays must have the same length")
+    if min(item_count, positive_batch_size, negatives_per_positive) < 1:
+        raise ValueError("sampling dimensions must be positive")
+
+    user_tensor = torch.as_tensor(users, dtype=torch.long, device=device)
+    positive_tensor = torch.as_tensor(positive_items, dtype=torch.long, device=device)
+    weight_tensor = torch.as_tensor(positive_weights, dtype=torch.float32, device=device)
+    observed_tensor = torch.as_tensor(observed_codes, dtype=torch.long, device=device)
+    order = torch.randperm(len(user_tensor), device=device)
+    for start in range(0, len(order), positive_batch_size):
+        indices = order[start : start + positive_batch_size]
+        positive_users = user_tensor.index_select(0, indices)
+        batch_positive_items = positive_tensor.index_select(0, indices)
+        negative_users = positive_users.repeat_interleave(negatives_per_positive)
+        negatives = torch.randint(
+            item_count, (len(negative_users),), dtype=torch.long, device=device
+        )
+        invalid = _torch_codes_present(
+            observed_tensor, negative_users * item_count + negatives
+        )
+        while bool(invalid.any()):
+            negatives[invalid] = torch.randint(
+                item_count,
+                (int(invalid.sum().item()),),
+                dtype=torch.long,
+                device=device,
+            )
+            invalid = _torch_codes_present(
+                observed_tensor, negative_users * item_count + negatives
+            )
+
+        batch_users = torch.cat([positive_users, negative_users])
+        batch_items = torch.cat([batch_positive_items, negatives])
+        labels = torch.cat(
+            [
+                torch.ones(len(positive_users), dtype=torch.float32, device=device),
+                torch.zeros(len(negative_users), dtype=torch.float32, device=device),
+            ]
+        )
+        weights = torch.cat(
+            [
+                weight_tensor.index_select(0, indices),
+                torch.ones(len(negative_users), dtype=torch.float32, device=device),
+            ]
+        )
+        shuffle = torch.randperm(len(batch_users), device=device)
+        yield (
+            batch_users.index_select(0, shuffle),
+            batch_items.index_select(0, shuffle),
+            labels.index_select(0, shuffle),
+            weights.index_select(0, shuffle),
+        )
+
+
 def normalized_confidence_weights(
     ratings: np.ndarray,
     positive_threshold: int,

@@ -8,6 +8,7 @@ from src.training import (
     iter_bpr_batches,
     iter_bpr_batches_torch,
     iter_pointwise_batches,
+    iter_pointwise_batches_torch,
     normalized_confidence_weights,
 )
 
@@ -144,3 +145,27 @@ def test_pointwise_sampler_labels_and_unseen_negatives():
     assert len(labels) == 6
     assert not np.isin(negative_codes, observed_codes).any()
     assert sorted(batch_weights[labels == 1]) == pytest.approx([0.75, 1.25])
+
+
+def test_torch_pointwise_sampler_labels_and_unseen_negatives():
+    users = np.array([0, 1], dtype=np.int64)
+    positives = np.array([0, 1], dtype=np.int64)
+    weights = np.array([0.75, 1.25], dtype=np.float32)
+    observed_codes = np.array([0, 5], dtype=np.int64)
+    batch_users, batch_items, labels, batch_weights = next(
+        iter_pointwise_batches_torch(
+            users,
+            positives,
+            weights,
+            observed_codes,
+            item_count=4,
+            positive_batch_size=2,
+            negatives_per_positive=2,
+            device=torch.device("cpu"),
+        )
+    )
+    negative_codes = batch_users[labels == 0] * 4 + batch_items[labels == 0]
+    assert labels.sum() == 2
+    assert len(labels) == 6
+    assert not torch.isin(negative_codes, torch.from_numpy(observed_codes)).any()
+    assert sorted(batch_weights[labels == 1].tolist()) == pytest.approx([0.75, 1.25])

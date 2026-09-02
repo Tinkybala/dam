@@ -19,6 +19,7 @@ from .training import (
     iter_bpr_batches,
     iter_bpr_batches_torch,
     iter_pointwise_batches,
+    iter_pointwise_batches_torch,
     load_mapping,
     map_interactions,
     observed_pair_codes,
@@ -319,26 +320,46 @@ def _run_pointwise(
     history: list[dict[str, float]] = []
     stale_epochs = 0
     training_started = time.perf_counter()
+    gpu_sampling = device.type == "cuda" and bool(config.get("gpu_sampling", True))
 
     for epoch in range(1, epochs + 1):
         model.train()
         loss_sum = 0.0
         example_count = 0
         epoch_started = time.perf_counter()
-        for batch_users, batch_items, labels, weights in iter_pointwise_batches(
-            train_users,
-            train_items,
-            positive_weights,
-            codes,
-            item_count,
-            positive_batch_size,
-            negative_count,
-            rng,
-        ):
-            users_tensor = torch.from_numpy(batch_users).to(device)
-            items_tensor = torch.from_numpy(batch_items).to(device)
-            labels_tensor = torch.from_numpy(labels).to(device)
-            weights_tensor = torch.from_numpy(weights).to(device)
+        if gpu_sampling:
+            batches = iter_pointwise_batches_torch(
+                train_users,
+                train_items,
+                positive_weights,
+                codes,
+                item_count,
+                positive_batch_size,
+                negative_count,
+                device,
+            )
+        else:
+            batches = iter_pointwise_batches(
+                train_users,
+                train_items,
+                positive_weights,
+                codes,
+                item_count,
+                positive_batch_size,
+                negative_count,
+                rng,
+            )
+        for batch_users, batch_items, labels, weights in batches:
+            if gpu_sampling:
+                users_tensor = batch_users
+                items_tensor = batch_items
+                labels_tensor = labels
+                weights_tensor = weights
+            else:
+                users_tensor = torch.from_numpy(batch_users).to(device)
+                items_tensor = torch.from_numpy(batch_items).to(device)
+                labels_tensor = torch.from_numpy(labels).to(device)
+                weights_tensor = torch.from_numpy(weights).to(device)
             optimizer.zero_grad(set_to_none=True)
             logits = model(users_tensor, items_tensor)
             losses = torch.nn.functional.binary_cross_entropy_with_logits(
@@ -389,6 +410,7 @@ def _run_pointwise(
         "mean_positive_weight": float(positive_weights.mean()),
         "epochs_completed": len(history),
         "training_runtime_seconds": time.perf_counter() - training_started,
+        "gpu_sampling": gpu_sampling,
         "history": history,
         "validation": aggregate_metrics(validation_predictions, k=10),
     }
