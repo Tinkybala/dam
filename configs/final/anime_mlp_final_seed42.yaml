@@ -16,4 +16,4 @@ eval_batch_size: 65536
 negatives_per_positive: 8
 epochs: 20
 early_stopping_patience: 5
-evaluate_test: false
+evaluate_test: true
