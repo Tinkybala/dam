@@ -1,0 +1,63 @@
+{
+  "runbook": "22_LIJIE_CANDIDATE_LOCK_FULL_USER_PREFLIGHT_RUNBOOK.md",
+  "status": "PASS",
+  "preflight_commit": "e4869c504c7fc376abc98649c9343517c1a63721",
+  "source_archive": "D:/Projects/SC4020_data_ming/tmp/dam-e4869c504c7fc376abc98649c9343517c1a63721.tar.gz",
+  "source_archive_sha256": "37D512EC4D1DDA8838CCCD7C90D3561B6E3FC0BB11A97B73F8670FF868EF8F00",
+  "metadata_archive": "D:/Projects/SC4020_data_ming/tmp/server_results_20260903_candidate_lock_preflight/candidate-lock-preflight-metadata-e4869c50.tar.gz",
+  "metadata_archive_sha256": "89633BAC0AE1B5C126B924554747783DAF34FC85AAC2FE41385D7115C6C6DA3F",
+  "user_count": 60384,
+  "candidate_count": 6038400,
+  "evaluate_test": false,
+  "device": "cuda",
+  "gpu_sampling": true,
+  "models": {
+    "bpr": {
+      "ndcg@10": 0.7360814346404253,
+      "hit_rate@10": 0.947717938526762,
+      "runtime_seconds": 91.39471722953022,
+      "training_runtime_seconds": 86.5134311541915,
+      "epochs_completed": 1
+    },
+    "weighted_neumf": {
+      "ndcg@10": 0.714635406784471,
+      "hit_rate@10": 0.9295177530471648,
+      "runtime_seconds": 20.775024624541402,
+      "training_runtime_seconds": 15.922563947737217,
+      "epochs_completed": 1
+    }
+  },
+  "ensemble": {
+    "weight": 0.7,
+    "ndcg@10": 0.7351599314879941,
+    "hit_rate@10": 0.9473536036036037,
+    "user_count": 60384,
+    "candidate_count": 6038400,
+    "validation_only": true
+  },
+  "gpu_monitor": {
+    "0": {
+      "samples": 91,
+      "peak_memory_used_mib": 900,
+      "peak_utilization_percent": 87,
+      "memory_total_mib": 46068
+    },
+    "1": {
+      "samples": 91,
+      "peak_memory_used_mib": 812,
+      "peak_utilization_percent": 91,
+      "memory_total_mib": 46068
+    }
+  },
+  "monitor_line_count": 274,
+  "checks": {
+    "model_schema_gate": true,
+    "ensemble_gate": true,
+    "logs_clean": true,
+    "source_hash_gate": true,
+    "tests": "29 passed",
+    "final_test": "not run",
+    "final_configs_changed": false
+  },
+  "server_release": "/mnt/hdd2/houlijie/sc4020_data_mining/releases/dam-e4869c504c7fc376abc98649c9343517c1a63721"
+}
