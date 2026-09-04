@@ -2,13 +2,14 @@ model: bpr
 artifacts_dir: ../../artifacts/anime-r7
 output_dir: ../../results/final/anime-bpr-seed-42
 seed: 42
-device: auto
+device: cuda
+gpu_sampling: true
 embedding_dim: 64
 learning_rate: 0.001
 l2: 0.0
 batch_size: 4096
 eval_batch_size: 65536
 negatives_per_positive: 8
-epochs: 20
+epochs: 30
 early_stopping_patience: 5
 evaluate_test: false

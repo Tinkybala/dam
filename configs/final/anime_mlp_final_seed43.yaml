@@ -2,7 +2,8 @@ model: mlp
 artifacts_dir: ../../artifacts/anime-r7
 output_dir: ../../results/final/anime-mlp-seed-43
 seed: 43
-device: auto
+device: cuda
+gpu_sampling: true
 positive_threshold: 7
 maximum_rating: 10
 embedding_dim: 64
