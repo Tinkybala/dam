@@ -278,4 +278,3 @@ recommend(user_id: int, top_k: int = 10) -> list[Recommendation]
 - 页面展示的指标无法追溯到 final summary；
 - 凭据、服务器坐标或绝对机器路径进入 staged diff；
 - 为了支持新用户而改变算法，却仍沿用原 final test 指标。
-
