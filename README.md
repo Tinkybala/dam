@@ -71,6 +71,7 @@ tests/        automated tests
 
 ## Documentation
 
+- [MovieLens and report closeout runbook](docs/29_LIJIE_MOVIELENS_AND_REPORT_CLOSEOUT_RUNBOOK.md)
 - [Experiment overview](docs/EXPERIMENT_PIPELINE_OVERVIEW.md)
 - [Experiment commands](EXPERIMENTS.md)
 - [Final result report](evidence/final_result_report_2026-09-05.md)
