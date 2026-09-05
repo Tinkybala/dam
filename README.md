@@ -10,6 +10,8 @@ checkpoints, and raw result directories remain outside Git.
 
 For a visual, end-to-end explanation of the completed experiment, see
 [`docs/EXPERIMENT_PIPELINE_OVERVIEW.md`](docs/EXPERIMENT_PIPELINE_OVERVIEW.md).
+The implementation plan for the interactive demonstration is in
+[`docs/28_LIJIE_VISUAL_RECOMMENDER_DEMO_RUNBOOK.md`](docs/28_LIJIE_VISUAL_RECOMMENDER_DEMO_RUNBOOK.md).
 
 Hash-recorded final-run operational helpers are stored in [`ops/`](ops/).
 They contain no access credentials or machine-specific connection settings.
