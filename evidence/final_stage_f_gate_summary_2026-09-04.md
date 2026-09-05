@@ -4,8 +4,8 @@ This evidence file intentionally contains no concrete test metric values.
 
 - Branch: `lijie`
 - Final-run source commit: `b2f4d6b8222f9f5a9afd0633f54a235f50e52c69`
-- Server release: `/mnt/hdd2/houlijie/sc4020_data_mining/releases/dam-b2f4d6b8222f9f5a9afd0633f54a235f50e52c69`
-- Results directory: `/mnt/hdd2/houlijie/sc4020_data_mining/releases/dam-b2f4d6b8222f9f5a9afd0633f54a235f50e52c69/results/final`
+- Server release: `<SERVER_RELEASE_ROOT>/dam-b2f4d6b8222f9f5a9afd0633f54a235f50e52c69`
+- Results directory: `<SERVER_RELEASE_ROOT>/dam-b2f4d6b8222f9f5a9afd0633f54a235f50e52c69/results/final`
 - Launcher SHA-256: `FDC2E1A8472F86D5FE13B8A015F6A4F15CE38FFFE1A050089867B99D650E5F9A`
 
 ## Gates

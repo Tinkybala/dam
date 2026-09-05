@@ -8,6 +8,9 @@ Repository-facing experiment checkpoints are recorded in
 [`EXPERIMENTS.md`](EXPERIMENTS.md). Generated datasets, predictions,
 checkpoints, and raw result directories remain outside Git.
 
+For a visual, end-to-end explanation of the completed experiment, see
+[`docs/EXPERIMENT_PIPELINE_OVERVIEW.md`](docs/EXPERIMENT_PIPELINE_OVERVIEW.md).
+
 Hash-recorded final-run operational helpers are stored in [`ops/`](ops/).
 They contain no access credentials or machine-specific connection settings.
 

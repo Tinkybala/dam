@@ -70,7 +70,7 @@ The sampled metrics rank one held-out positive among 100 candidates. They must
 not be presented as full-catalog performance, catalog coverage, or final test
 evidence. The locked final configurations remain test-sealed at this checkpoint.
 
-## 2026-09-04 — Anime locked final Stage F
+## 2026-09-05 — Anime locked final experiment
 
 ### Status
 
@@ -80,8 +80,15 @@ evidence. The locked final configurations remain test-sealed at this checkpoint.
   intervention during training.
 - All 19 metrics passed the schema gate; all 18 trainable runs passed the GPU
   attach gate.
-- The fixed `w=0.7` ensemble and final metric summary have not yet been
-  generated. Stage F must not be rerun.
+- The pre-declared `w=0.7` ensemble was generated from the locked component
+  outputs without further weight search. It ranked first on both final metrics:
+  `0.799658 ± 0.000259` NDCG@10 and `0.956335 ± 0.000843` HR@10.
+- Six ensemble artifacts and the final summary passed their schema gates.
+- The metadata archive matched locally and remotely by SHA-256, the final
+  report was committed, and the one-time SSH credential was removed locally
+  and from the server.
+- The campaign is complete and archived. Stage F must not be rerun, and the
+  test result must not be used to restart tuning.
 
 The credential-free gate record is in
 [`evidence/final_stage_f_gate_summary_2026-09-04.md`](evidence/final_stage_f_gate_summary_2026-09-04.md).
@@ -90,3 +97,8 @@ The sanitized continuation checkpoint and helper hashes are in
 Operational helpers are retained under [`ops/`](ops/); generated metrics,
 predictions, model checkpoints, server coordinates, and access credentials stay
 outside Git.
+
+The complete stage-by-stage explanation is in
+[`docs/EXPERIMENT_PIPELINE_OVERVIEW.md`](docs/EXPERIMENT_PIPELINE_OVERVIEW.md),
+and the final results are in
+[`evidence/final_result_report_2026-09-05.md`](evidence/final_result_report_2026-09-05.md).

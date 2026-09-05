@@ -9,8 +9,8 @@
 - Preflight/source commit: `e4869c504c7fc376abc98649c9343517c1a63721`
 - Source archive SHA-256: `37D512EC4D1DDA8838CCCD7C90D3561B6E3FC0BB11A97B73F8670FF868EF8F00`
 - Metadata archive SHA-256 (server and local): `89633BAC0AE1B5C126B924554747783DAF34FC85AAC2FE41385D7115C6C6DA3F`
-- Server release: `/mnt/hdd2/houlijie/sc4020_data_mining/releases/dam-e4869c504c7fc376abc98649c9343517c1a63721`
-- Local metadata: `D:\Projects\SC4020_data_ming\tmp\server_results_20260903_candidate_lock_preflight\candidate-lock-preflight-metadata-e4869c50.tar.gz`
+- Server release: `<SERVER_RELEASE_ROOT>/dam-e4869c504c7fc376abc98649c9343517c1a63721`
+- Local metadata: `<LOCAL_RESULTS_DIR>/candidate-lock-preflight-metadata-e4869c50.tar.gz`
 - Users/candidates: `60,384` users and `6,038,400` candidates
 - Device/sampling: explicit CUDA; `gpu_sampling: true`
 - `evaluate_test`: `false`; test was not read
@@ -33,7 +33,7 @@
 - Ensemble: fixed weight `0.7`, 60,384 users, 6,038,400 candidates, `validation_only: true`.
 - Logs: no traceback, OOM, non-finite, failed, or timeout matches.
 - Local repository: branch `lijie`, clean after pushed commit; final configs unchanged and remain test-sealed.
-- FYP directory `/mnt/hdd2/houlijie/trellis2` was not touched.
+- The unrelated server-side FYP directory was not touched.
 
 ## Stop point
 

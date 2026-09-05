@@ -7,9 +7,9 @@
 - Final-run source commit: `b2f4d6b8222f9f5a9afd0633f54a235f50e52c69`
 - `final_summary.json` SHA-256: `B9F34504DA2ADF564E23ED17B3215A2D582E2B164F13FC436393EE6EA8DA2DDB`
 - Metadata archive SHA-256: `F8FBE19C4B8BACB4D8EF728155F1D5717C5E9C0E2680C922A60A3E22B7E6C74A`
-- Server release: `/mnt/hdd2/houlijie/sc4020_data_mining/releases/dam-b2f4d6b8222f9f5a9afd0633f54a235f50e52c69`
-- Server archive: `/mnt/hdd2/houlijie/sc4020_data_mining/final-test-metadata-b2f4d6b8.tar.gz`
-- Local archive: `D:\Projects\SC4020_data_ming\tmp\server_results_20260905_final\final-test-metadata-b2f4d6b8.tar.gz`
+- Server release: `<SERVER_RELEASE_ROOT>/dam-b2f4d6b8222f9f5a9afd0633f54a235f50e52c69`
+- Server archive: `<SERVER_ARCHIVE_DIR>/final-test-metadata-b2f4d6b8.tar.gz`
+- Local archive: `<LOCAL_RESULTS_DIR>/final-test-metadata-b2f4d6b8.tar.gz`
 
 Stage F completed with 19/19 schema gates, 18/18 GPU attach gates, and zero worker exit failures. Stage G–H generated the locked percentile-rank ensemble with `w=0.7`; the six ensemble artifacts and `final_summary.json` passed `STAGE_G_H_SCHEMA_GATE=PASS`.
 

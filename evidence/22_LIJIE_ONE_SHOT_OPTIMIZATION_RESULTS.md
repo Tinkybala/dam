@@ -7,12 +7,12 @@
 - Status: complete; permanent validation tuning stop reached
 - Source commit used by the server release: `3e874b8b6a940365ba13a636fd84cba99c549246`
 - Corrected local plan commit: `787484f36ac9c3764868f63fc79299fbaf7ed191`
-- Server release: `/mnt/hdd2/houlijie/sc4020_data_mining/releases/dam-3e874b8b6a940365ba13a636fd84cba99c549246`
+- Server release: `<SERVER_RELEASE_ROOT>/dam-3e874b8b6a940365ba13a636fd84cba99c549246`
 - Dataset/split: fixed Anime development split; 10,000 development users; 1,000,000 sampled candidates
 - `evaluate_test`: `false` for every run
 - GPU sampler: `true` for every run
-- Raw summaries: `D:\Projects\SC4020_data_ming\tmp\server_results_20260902_oneshot\phase_f_candidate_summary.json`, `phase_f_controls_10k_summary.json`
-- Gate artifact: `D:\Projects\SC4020_data_ming\tmp\server_results_20260902_oneshot\phase_f_gate.json`
+- Raw summaries: `<LOCAL_RESULTS_DIR>/phase_f_candidate_summary.json`, `phase_f_controls_10k_summary.json`
+- Gate artifact: `<LOCAL_RESULTS_DIR>/phase_f_gate.json`
 
 ## Valid paired results
 
