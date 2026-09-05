@@ -17,6 +17,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+demo = ["streamlit>=1.36"]
 
 [project.scripts]
 dam-prepare = "src.prepare:main"

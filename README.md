@@ -12,6 +12,15 @@ For a visual, end-to-end explanation of the completed experiment, see
 [`docs/EXPERIMENT_PIPELINE_OVERVIEW.md`](docs/EXPERIMENT_PIPELINE_OVERVIEW.md).
 The implementation plan for the interactive demonstration is in
 [`docs/28_LIJIE_VISUAL_RECOMMENDER_DEMO_RUNBOOK.md`](docs/28_LIJIE_VISUAL_RECOMMENDER_DEMO_RUNBOOK.md).
+The local Streamlit demonstration is documented in
+[`demo/README.md`](demo/README.md).
+
+Launch the offline visual demo from the repository root with:
+
+```bash
+python -m pip install -e ".[demo]"
+streamlit run demo/app.py
+```
 
 Hash-recorded final-run operational helpers are stored in [`ops/`](ops/).
 They contain no access credentials or machine-specific connection settings.

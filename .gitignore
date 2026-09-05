@@ -12,3 +12,6 @@ results/
 checkpoints/
 *.pt
 *.pth
+
+# Local demo inference bundle (checkpoints, mappings, and histories)
+demo_bundle/
