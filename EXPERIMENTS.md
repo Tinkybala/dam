@@ -69,3 +69,24 @@ equivalence.
 The sampled metrics rank one held-out positive among 100 candidates. They must
 not be presented as full-catalog performance, catalog coverage, or final test
 evidence. The locked final configurations remain test-sealed at this checkpoint.
+
+## 2026-09-04 — Anime locked final Stage F
+
+### Status
+
+- Final training source commit:
+  `b2f4d6b8222f9f5a9afd0633f54a235f50e52c69`
+- The locked 19-run campaign completed without retry, timeout, or manual
+  intervention during training.
+- All 19 metrics passed the schema gate; all 18 trainable runs passed the GPU
+  attach gate.
+- The fixed `w=0.7` ensemble and final metric summary have not yet been
+  generated. Stage F must not be rerun.
+
+The credential-free gate record is in
+[`evidence/final_stage_f_gate_summary_2026-09-04.md`](evidence/final_stage_f_gate_summary_2026-09-04.md).
+The sanitized continuation checkpoint and helper hashes are in
+[`evidence/final_test_continuation_checkpoint_2026-09-05.md`](evidence/final_test_continuation_checkpoint_2026-09-05.md).
+Operational helpers are retained under [`ops/`](ops/); generated metrics,
+predictions, model checkpoints, server coordinates, and access credentials stay
+outside Git.

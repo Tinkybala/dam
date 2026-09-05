@@ -8,6 +8,9 @@ Repository-facing experiment checkpoints are recorded in
 [`EXPERIMENTS.md`](EXPERIMENTS.md). Generated datasets, predictions,
 checkpoints, and raw result directories remain outside Git.
 
+Hash-recorded final-run operational helpers are stored in [`ops/`](ops/).
+They contain no access credentials or machine-specific connection settings.
+
 ## Setup
 
 Use Python 3.11 or newer in a virtual environment:
