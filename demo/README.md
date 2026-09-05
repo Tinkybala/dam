@@ -1,8 +1,8 @@
 # Anime Recommender Offline Demo
 
-这是一个本地单进程 Streamlit 展示系统。它使用冻结的 BPR ensemble
-component seed 42 与 Weighted NeuMF seed 42，在 CPU 上为匿名已知用户评分完整
-warm catalog，并按固定 `0.7 / 0.3` 百分位融合返回 Top-K。
+这是一个单面板、本地 Streamlit 展示系统。它使用冻结的 BPR ensemble
+component seed 42 与 Weighted NeuMF seed 42，在 CPU 上为 20 位匿名已知用户
+评分完整 warm catalog，并按固定 `0.7 / 0.3` 百分位融合返回 Top-10。
 
 ## 启动
 
@@ -26,8 +26,23 @@ DAM_DEMO_BUNDLE=/path/to/demo_bundle streamlit run demo/app.py
 `manifest.example.json` 仅是结构模板；真实 manifest 随本地 bundle 一起生成，
 不会提交到仓库。
 
-## 页面
+## 展示内容
 
-- 推荐体验：选择匿名画像，查看历史与融合 Top-K；
-- 模型解释：比较 BPR、Weighted NeuMF 与融合的用户内百分位；
-- 实验看板：展示最终报告汇总和 sampled-candidate 评估边界。
+- 选择一位匿名用户；
+- 查看 5 部历史动漫和可展开的更多历史；
+- 查看带本地缓存海报的全目录 Top-10；
+- 缺失海报使用仓库内的占位图。
+
+海报只改善展示效果，不参与模型输入或排序。缓存位于已忽略的
+`demo_bundle/posters/`，不能提交 Git。使用以下命令从本地原始评分数据扩充用户、
+预计算展示集合并获取 AniList 海报：
+
+```bash
+python -m demo.prepare_showcase \
+  --ratings /path/to/rating.csv \
+  --bundle demo_bundle \
+  --user-count 20
+```
+
+脚本不会读取 validation/test candidates、labels 或 predictions。AniList 只在准备
+阶段访问；Demo 运行时保持离线。

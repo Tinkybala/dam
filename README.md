@@ -14,6 +14,8 @@ The implementation plan for the interactive demonstration is in
 [`docs/28_LIJIE_VISUAL_RECOMMENDER_DEMO_RUNBOOK.md`](docs/28_LIJIE_VISUAL_RECOMMENDER_DEMO_RUNBOOK.md).
 The local Streamlit demonstration is documented in
 [`demo/README.md`](demo/README.md).
+It is a single-panel, full-catalog Top-10 experience for 20 anonymous users;
+posters are cached locally for presentation and never enter model scoring.
 
 Launch the offline visual demo from the repository root with:
 

@@ -110,6 +110,16 @@ def test_history_and_stats_are_available_for_demo_user(tmp_path: Path) -> None:
     assert engine.catalog_stats["catalog_count"] == 5
     history = engine.history(10, limit=10)
     assert history["anime_id"].tolist() == [101, 102]
+    assert engine.poster_path(101).name == "poster-placeholder.svg"
+
+
+def test_undeclared_poster_index_fails_fast(tmp_path: Path) -> None:
+    bundle = _write_fixture(tmp_path)
+    (bundle / "poster_index.json").write_text(
+        json.dumps({"101": {"file": "posters/101.jpg"}}) + "\n", encoding="utf-8"
+    )
+    with pytest.raises(BundleError, match="not declared"):
+        Recommender(bundle)
 
 
 def test_unknown_user_and_invalid_top_k_fail(tmp_path: Path) -> None:
@@ -127,6 +137,16 @@ def test_manifest_hash_mismatch_fails_fast(tmp_path: Path) -> None:
     manifest["files"]["item_mapping.parquet"]["sha256"] = "0" * 64
     manifest_path.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
     with pytest.raises(BundleError, match="SHA-256 mismatch"):
+        Recommender(bundle)
+
+
+def test_manifest_parent_traversal_fails_fast(tmp_path: Path) -> None:
+    bundle = _write_fixture(tmp_path)
+    manifest_path = bundle / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["files"]["../outside.bin"] = {"bytes": 0, "sha256": "0" * 64}
+    manifest_path.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+    with pytest.raises(BundleError, match="unsafe path"):
         Recommender(bundle)
 
 

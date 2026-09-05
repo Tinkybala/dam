@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import html
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +35,10 @@ def _fill_metadata(frame: pd.DataFrame) -> pd.DataFrame:
             result[column] = result[column].astype(object).where(
                 result[column].notna(), "Unknown"
             )
+    if "name" in result:
+        result["name"] = result["name"].map(
+            lambda value: html.unescape(str(value)) if value != "Unknown" else value
+        )
     for column in ("rating", "members"):
         if column in result:
             result[column] = pd.to_numeric(result[column], errors="coerce")
@@ -59,6 +64,7 @@ class Recommender:
         self.observed = self.data["observed"]
         self.metadata = _fill_metadata(self.data["metadata"])
         self.demo_user_table = self.data["demo_users"]
+        self.poster_index = self.data["poster_index"]
         self.score_batch_size = score_batch_size
         self.user_to_index = dict(
             zip(self.user_mapping["user_id"].astype(int), self.user_mapping["user_index"].astype(int))
@@ -129,6 +135,16 @@ class Recommender:
         history = _fill_metadata(history)
         columns = [column for column in ["anime_id", "name", "genre", "type", "episodes", "rating"] if column in history]
         return history.sort_values(["name", "anime_id"], kind="mergesort")[columns].head(limit).reset_index(drop=True)
+
+    def poster_path(self, anime_id: int) -> Path:
+        """Return a cached poster or the committed offline placeholder."""
+
+        record = self.poster_index.get(str(int(anime_id)))
+        if record is not None:
+            candidate = (self.bundle_dir / record["file"]).resolve()
+            if candidate.is_file() and self.bundle_dir in candidate.parents:
+                return candidate
+        return Path(__file__).resolve().parent / "assets" / "poster-placeholder.svg"
 
     def recommend(self, user_id: int, top_k: int = 10) -> pd.DataFrame:
         """Return unseen Top-K recommendations with both model explanations."""

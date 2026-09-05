@@ -1,5 +1,22 @@
 # 28 — LIJIE 可视化动漫推荐 Demo 实施手册
 
+## Implementation update — 2026-09-05
+
+The implemented V1 supersedes the earlier three-page concept below. Following
+user review, the product scope was deliberately reduced to one panel:
+
+- select one of 20 anonymous model-known users;
+- show five examples from that user's observed anime history;
+- rank the remaining 7,223-item warm catalog and show a fixed Top-10;
+- render locally cached posters for presentation, with an offline fallback;
+- keep model explanations and experiment charts in documentation rather than
+  the interactive interface.
+
+Poster metadata does not enter model scoring. The sampled-candidate final
+metrics are disclosed as experiment evidence and are not presented as
+full-catalog interface accuracy. Exact implementation evidence is recorded in
+[`../evidence/demo_single_panel_poster_gate_20260905.md`](../evidence/demo_single_panel_poster_gate_20260905.md).
+
 ## 1. 目标
 
 把已经完成的离线推荐实验包装成一个适合答辩和作品展示的本地 Web Demo，

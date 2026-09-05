@@ -5,7 +5,11 @@
   "catalog_type": "warm_items",
   "catalog_count": 0,
   "eligible_user_count": 0,
-  "demo_user_count": 0,
+  "demo_user_count": 20,
+  "demo_observed_row_count": 0,
+  "poster_provider": "AniList public media metadata",
+  "poster_display_item_count": 0,
+  "poster_cached_count": 0,
   "ensemble": {
     "bpr_weight": 0.7,
     "weighted_neumf_weight": 0.3,
@@ -35,6 +39,8 @@
     "item_mapping.parquet": {"bytes": 0, "sha256": "<sha256>"},
     "observed_by_user.parquet": {"bytes": 0, "sha256": "<sha256>"},
     "demo_users.parquet": {"bytes": 0, "sha256": "<sha256>"},
-    "demo/assets/anime_metadata.parquet": {"bytes": 0, "sha256": "<sha256>"}
+    "demo/assets/anime_metadata.parquet": {"bytes": 0, "sha256": "<sha256>"},
+    "poster_index.json": {"bytes": 0, "sha256": "<sha256>"},
+    "posters/<anime_id>.<extension>": {"bytes": 0, "sha256": "<sha256>"}
   }
 }

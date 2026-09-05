@@ -43,8 +43,8 @@ def _manifest_path(project_root: Path, bundle_dir: Path, relative: str) -> Path:
     """Resolve a manifest path without permitting absolute paths."""
 
     path = Path(relative)
-    if path.is_absolute() or path.drive:
-        raise BundleError(f"manifest contains an absolute path: {relative}")
+    if path.is_absolute() or path.drive or ".." in path.parts:
+        raise BundleError(f"manifest contains an unsafe path: {relative}")
     if relative.startswith("demo/"):
         resolved = project_root / path
     else:
@@ -150,6 +150,29 @@ def load_bundle(bundle_dir: str | Path, metadata_path: str | Path | None = None)
     if metadata["anime_id"].duplicated().any():
         raise BundleError("anime metadata contains duplicate anime_id values")
 
+    poster_index_path = bundle / "poster_index.json"
+    poster_index: dict[str, dict[str, str]] = {}
+    if poster_index_path.is_file():
+        if "poster_index.json" not in manifest["files"]:
+            raise BundleError("poster index is not declared in the manifest")
+        try:
+            raw_index = json.loads(poster_index_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise BundleError("invalid poster index") from exc
+        if not isinstance(raw_index, dict):
+            raise BundleError("poster index must be an object")
+        for anime_id, record in raw_index.items():
+            if not isinstance(record, dict) or not isinstance(record.get("file"), str):
+                raise BundleError("poster index contains a malformed record")
+            relative = Path(record["file"])
+            if relative.is_absolute() or relative.drive or ".." in relative.parts:
+                raise BundleError("poster index contains an unsafe path")
+            if relative.as_posix() not in manifest["files"]:
+                raise BundleError("poster file is not declared in the manifest")
+            poster_index[str(int(anime_id))] = {
+                str(key): str(value) for key, value in record.items()
+            }
+
     return {
         "manifest": manifest,
         "user_mapping": user_mapping.sort_values("user_index").reset_index(drop=True),
@@ -157,5 +180,5 @@ def load_bundle(bundle_dir: str | Path, metadata_path: str | Path | None = None)
         "observed": observed.sort_values(["user_id", "anime_id"]).reset_index(drop=True),
         "demo_users": demo_users.reset_index(drop=True),
         "metadata": metadata.copy(),
+        "poster_index": poster_index,
     }
-

@@ -14,7 +14,7 @@ if str(ROOT) not in sys.path:
 
 from demo.data_access import BundleError  # noqa: E402
 from demo.inference import Recommender  # noqa: E402
-from demo.pages import experiment_dashboard, model_explainer, recommendation  # noqa: E402
+from demo import recommendation  # noqa: E402
 
 
 @st.cache_resource(show_spinner="正在加载冻结模型…")
@@ -23,28 +23,20 @@ def load_recommender(bundle_dir: str, metadata_path: str) -> Recommender:
 
 
 def main() -> None:
-    st.set_page_config(page_title="Anime Recommender Demo", page_icon="🎬", layout="wide")
-    st.title("Anime Recommender · Offline Demo")
-    st.caption("SC4020 model-based recommender · local CPU inference · anonymous profiles")
+    st.set_page_config(page_title="Anime Top-10 Recommender", page_icon="🎬", layout="wide")
+    st.title("Anime Top-10 Recommender")
+    st.caption("基于数据集中匿名已知用户的完整 warm-catalog 推荐")
     bundle = Path(os.environ.get("DAM_DEMO_BUNDLE", ROOT / "demo_bundle")).expanduser()
     metadata = Path(os.environ.get("DAM_DEMO_METADATA", ROOT / "demo" / "assets" / "anime_metadata.parquet")).expanduser()
     try:
         engine = load_recommender(str(bundle), str(metadata))
     except (BundleError, OSError, ValueError, RuntimeError) as exc:
         st.error("Demo bundle 验证失败，请检查 README 中的 bundle 放置方式。")
-        st.exception(exc)
+        st.code(type(exc).__name__)
         st.stop()
 
-    st.sidebar.success("Bundle SHA 校验通过")
-    page = st.sidebar.radio("页面", ["推荐体验", "模型解释", "实验看板"])
-    if page == "推荐体验":
-        recommendation.render(engine)
-    elif page == "模型解释":
-        model_explainer.render(engine)
-    else:
-        experiment_dashboard.render(engine)
+    recommendation.render(engine)
 
 
 if __name__ == "__main__":
     main()
-
