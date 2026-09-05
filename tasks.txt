@@ -7,7 +7,7 @@ Content-Based Filtering (User-Item) siyuan
 
 
 Collaborative Filtering
-Neighbourhood-based (user-user)
+Neighbourhood-based (user-user) zhewen
 - User ratings act as a user representation; no need feature engineering
 - Use vector distance metrics to determine similar users (KNN)
 - look for the items that each nearest neighbor likes
