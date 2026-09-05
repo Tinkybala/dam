@@ -29,6 +29,7 @@ DAM_DEMO_BUNDLE=/path/to/demo_bundle streamlit run demo/app.py
 ## 展示内容
 
 - 选择一位匿名用户；
+- 使用页面右上角按钮在完整中文与英文界面之间切换；
 - 查看 5 部历史动漫和可展开的更多历史；
 - 查看带本地缓存海报的全目录 Top-10；
 - 缺失海报使用仓库内的占位图。
