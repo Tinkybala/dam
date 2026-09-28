@@ -1,4 +1,4 @@
-"""Command-line entry point for freezing Anime experiment artifacts."""
+"""Freeze Anime or MovieLens experiment artifacts without training a model."""
 
 from __future__ import annotations
 
@@ -18,34 +18,47 @@ from .data import (
     iterative_positive_k_core,
     leave_two_out_split,
     load_anime_ratings,
+    load_movielens_ratings,
     positive_interactions,
     remove_ambiguous_pairs,
     sample_evaluation_candidates,
 )
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Prepare a reproducible warm-start Anime split and candidates."
+        description="Prepare a reproducible warm-start split and candidates."
     )
+    parser.add_argument("--dataset", choices=["anime", "movielens-1m"], default="anime")
     parser.add_argument("--ratings", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--positive-threshold", type=int, default=7)
+    parser.add_argument("--positive-threshold", type=int, default=None)
     parser.add_argument("--core-size", type=int, default=5)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--negative-count", type=int, default=99)
     parser.add_argument("--development-user-count", type=int, default=10_000)
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def prepare(args: argparse.Namespace) -> dict[str, object]:
     ratings_path = args.ratings.resolve()
     output = args.output.resolve()
-    output.mkdir(parents=True, exist_ok=True)
+    if output.exists() and (not output.is_dir() or any(output.iterdir())):
+        raise FileExistsError(f"refusing to overwrite non-empty artifact path: {output}")
+    dataset = getattr(args, "dataset", "anime")
+    if dataset not in {"anime", "movielens-1m"}:
+        raise ValueError(f"unsupported dataset: {dataset}")
+    movie = dataset == "movielens-1m"
+    threshold = args.positive_threshold
+    if threshold is None:
+        threshold = 4 if movie else 7
+    maximum_rating = 5 if movie else 10
+    if not 1 <= threshold <= maximum_rating:
+        raise ValueError("positive_threshold must be within the dataset rating range")
 
-    raw = load_anime_ratings(ratings_path)
+    raw = (load_movielens_ratings if movie else load_anime_ratings)(ratings_path)
     deduplicated, ambiguous_pair_count = remove_ambiguous_pairs(raw)
-    positives = positive_interactions(deduplicated, args.positive_threshold)
+    positives = positive_interactions(deduplicated, threshold)
     core, core_stats = iterative_positive_k_core(positives, args.core_size)
     if core.empty:
         raise ValueError("positive k-core is empty")
@@ -93,19 +106,22 @@ def prepare(args: argparse.Namespace) -> dict[str, object]:
             {"user_id": development_users}
         ),
     }
+    output.mkdir(parents=True, exist_ok=True)
     for filename, frame in frames.items():
         frame.to_parquet(output / filename, index=False)
 
     manifest: dict[str, object] = {
-        "dataset": "anime_recommendations_database",
+        "dataset": "movielens_1m" if movie else "anime_recommendations_database",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "ratings_file": ratings_path.name,
         "ratings_sha256": _sha256(ratings_path),
         "raw_row_count": len(raw),
         "ambiguous_pair_count": ambiguous_pair_count,
         "removed_duplicate_row_count": len(raw) - len(deduplicated),
-        "positive_threshold": args.positive_threshold,
-        "unrated_value": -1,
+        "positive_threshold": threshold,
+        "minimum_rating": 1,
+        "maximum_rating": maximum_rating,
+        "unrated_value": None if movie else -1,
         "positive_core_size": args.core_size,
         "split_seed": args.seed,
         "candidate_seed_validation": args.seed,
@@ -120,6 +136,11 @@ def prepare(args: argparse.Namespace) -> dict[str, object]:
         "observed_interaction_count": len(observed_interactions),
         "core": asdict(core_stats),
         "observed_items_excluded_from_negatives": True,
+        "split_strategy": "seeded_random_leave_two_out_with_warm_item_repair",
+        "files": {
+            name: {"rows": len(frame), "sha256": _sha256(output / name)}
+            for name, frame in frames.items()
+        },
     }
     (output / "manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"

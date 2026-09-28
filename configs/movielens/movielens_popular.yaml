@@ -1,0 +1,8 @@
+# Migrated from configs/final/anime_popular_final.yaml; evaluate_test is release-controlled.
+model: popular
+artifacts_dir: ../../artifacts/movielens-1m-r4
+output_dir: ../../results/movielens/popular-seed-42
+seed: 42
+evaluate_test: false
+positive_threshold: 4
+maximum_rating: 5

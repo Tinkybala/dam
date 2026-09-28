@@ -43,6 +43,30 @@ def load_anime_ratings(path: str | Path) -> pd.DataFrame:
     return frame
 
 
+def load_movielens_ratings(path: str | Path) -> pd.DataFrame:
+    """Read MovieLens 1M; retain the legacy item column for artifact compatibility.
+
+    Timestamp is validated but discarded: this pipeline uses a seeded random
+    leave-two-out split, not a chronological split.
+    """
+    frame = pd.read_csv(path, sep="::", engine="python", header=None, dtype=str)
+    if frame.shape[1] != 4 or frame.isna().any().any():
+        raise ValueError("MovieLens rows must contain user::movie::rating::timestamp")
+    frame.columns = ["user_id", "anime_id", "rating", "timestamp"]
+    for column in frame:
+        if not frame[column].str.fullmatch(r"[0-9]+").all():
+            raise ValueError(f"MovieLens {column} must contain non-negative integers")
+        frame[column] = pd.to_numeric(frame[column], errors="raise")
+    if not frame["rating"].between(1, 5).all():
+        raise ValueError("MovieLens ratings must be between 1 and 5")
+    for column in ("user_id", "anime_id"):
+        if not frame[column].between(1, np.iinfo(np.int64).max).all():
+            raise ValueError(f"MovieLens {column} must be a positive int64")
+    return frame[list(REQUIRED_COLUMNS)].astype(
+        {"user_id": "int64", "anime_id": "int64", "rating": "int16"}
+    )
+
+
 def remove_ambiguous_pairs(ratings: pd.DataFrame) -> tuple[pd.DataFrame, int]:
     """Remove all rows belonging to a duplicated user-item pair.
 
@@ -269,4 +293,3 @@ def _require_columns(frame: pd.DataFrame, columns: Iterable[str]) -> None:
     missing = set(columns).difference(frame.columns)
     if missing:
         raise ValueError(f"missing required columns: {sorted(missing)}")
-

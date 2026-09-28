@@ -1,0 +1,18 @@
+# Migrated from configs/final/anime_gmf_final_seed43.yaml; evaluate_test is release-controlled.
+model: gmf
+artifacts_dir: ../../artifacts/movielens-1m-r4
+output_dir: ../../results/movielens/gmf-seed-43
+seed: 43
+device: cuda
+gpu_sampling: true
+positive_threshold: 4
+maximum_rating: 5
+embedding_dim: 16
+learning_rate: 0.001
+l2: 1.0e-06
+positive_batch_size: 2048
+eval_batch_size: 65536
+negatives_per_positive: 8
+epochs: 20
+early_stopping_patience: 5
+evaluate_test: false
