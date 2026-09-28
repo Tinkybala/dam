@@ -20,6 +20,10 @@ user-user neighbourhood, item-item neighbourhood, and model-based methods.
 The current `main` item-item [notebook](item_item_collab/item_item_collab.ipynb)
 is a small-sample prototype. The results below belong to the model-based
 workstream; they are not a completed comparison of all four workstreams.
+The [team framework](docs/PROJECT1_TEAM_FRAMEWORK.md) maps the course
+requirements to each workstream and explains how to integrate results. Each
+owner can use the [handoff template](docs/WORKSTREAM_HANDOFF_TEMPLATE.md)
+when their method is ready for review.
 
 ## Model-based workstream
 
@@ -93,6 +97,8 @@ tests/        automated tests
 ## Documentation
 
 - [Anime report figures and captions](docs/30_LIJIE_ANIME_REPORT_FIGURES.md)
+- [Project 1 team framework](docs/PROJECT1_TEAM_FRAMEWORK.md)
+- [Workstream handoff template](docs/WORKSTREAM_HANDOFF_TEMPLATE.md)
 - [Anime results and discussion draft](docs/31_LIJIE_ANIME_RESULTS_DISCUSSION_DRAFT.md)
 - [Methods and experimental setup](docs/32_LIJIE_METHODS_AND_EXPERIMENTAL_SETUP.md)
 - [Verified final parameter tables](docs/33_LIJIE_FINAL_PARAMETER_TABLES.md)
