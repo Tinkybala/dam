@@ -1,0 +1,137 @@
+{
+  "artifact_gate": {
+    "artifact_files_verified": 9,
+    "candidates_per_user": 100,
+    "dataset": "movielens_1m",
+    "items": 3125,
+    "status": "PASS",
+    "test_metrics_computed": false,
+    "train_positives": 562308,
+    "users": 6034
+  },
+  "artifact_manifest": {
+    "ambiguous_pair_count": 0,
+    "candidate_seed_test": 43,
+    "candidate_seed_validation": 42,
+    "core": {
+      "input_item_count": 3533,
+      "input_positive_count": 575281,
+      "input_user_count": 6038,
+      "iterations": 1,
+      "output_item_count": 3125,
+      "output_positive_count": 574376,
+      "output_user_count": 6034
+    },
+    "created_at_utc": "2026-09-26T02:11:55.645885+00:00",
+    "dataset": "movielens_1m",
+    "development_user_count": 6034,
+    "eligible_user_count": 6034,
+    "files": {
+      "development_users.parquet": {
+        "rows": 6034,
+        "sha256": "9483debfa774e1571408be4dd6c81f9c4e6533e14ffec1a665d875298b0ade82"
+      },
+      "item_mapping.parquet": {
+        "rows": 3125,
+        "sha256": "94250df465d75387f8706d9f7c81ee729c5daae221c6ca04506ccd6648a2f5fd"
+      },
+      "observed_interactions.parquet": {
+        "rows": 994338,
+        "sha256": "47d9f8b3f14f31a77f2ff16221467ad12a0bb2eac00080ccb44f6bbcab50d08b"
+      },
+      "test_candidates.parquet": {
+        "rows": 603400,
+        "sha256": "2e62ab92ca9dc42184432c9501958dca9c4172cca40468d9b9f23b2dabca8934"
+      },
+      "test_positives.parquet": {
+        "rows": 6034,
+        "sha256": "d819d7e0bae3e595f094fdbfd6ba31c577524d8250f5b0501cbe9a5b5e1bf650"
+      },
+      "train_positives.parquet": {
+        "rows": 562308,
+        "sha256": "6d75aa1f6a1ecd5828026358ad93781b30ef0c3a3c1c618b877c7effc44cbb33"
+      },
+      "user_mapping.parquet": {
+        "rows": 6034,
+        "sha256": "487d86bdae37bcd51ad555b4ce7d3b25722dd4bd3fb5d6a72c3f375571098659"
+      },
+      "validation_candidates.parquet": {
+        "rows": 603400,
+        "sha256": "f482a58a339cd4d9dbde32f5b5b293e7f2709e3cfd42221bc1994c3ab98398e4"
+      },
+      "validation_positives.parquet": {
+        "rows": 6034,
+        "sha256": "b12ad6de1e7c28b8a395e129f8fff8185284f6b8d6d94b1f424714df44c874de"
+      }
+    },
+    "maximum_rating": 5,
+    "minimum_rating": 1,
+    "negative_count": 99,
+    "observed_interaction_count": 994338,
+    "observed_items_excluded_from_negatives": true,
+    "positive_core_size": 5,
+    "positive_threshold": 4,
+    "ratings_file": "ratings.dat",
+    "ratings_sha256": "506d64ca44484487c11dc2d9a28de5c54948213e6b96285e298afe28d6ea4e0f",
+    "raw_row_count": 1000209,
+    "removed_duplicate_row_count": 0,
+    "split_seed": 42,
+    "split_strategy": "seeded_random_leave_two_out_with_warm_item_repair",
+    "test_positive_count": 6034,
+    "train_positive_count": 562308,
+    "unrated_value": null,
+    "validation_positive_count": 6034,
+    "warm_item_count": 3125
+  },
+  "artifact_manifest_sha256": "b0df918ca8dd548801aa2f90a8abd94f445b5be9fe50159c7f7ca1116c1023a6",
+  "base_commit": "4d2bd1fbfe5700fa1e5288f46cd9a1a76dacd5f5",
+  "candidate_lock_commit": null,
+  "configs": {
+    "bpr_source": "anime_bpr_ensemble_component_final_seed{seed}.yaml",
+    "cuda_trainable": 12,
+    "ensemble_weight_bpr": 0.7,
+    "gpu_sampling": 12,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "test_sealed": 13,
+    "total": 13
+  },
+  "download": {
+    "archive_bytes": 5917549,
+    "archive_sha256": "a6898adb50b9ca05aa231689da44c217cb524e7ebd39d264c56e2832f2c54e20",
+    "downloaded_at_utc": "2026-09-26T02:11:06.594431+00:00",
+    "official_md5": "c4d9eecfca2ab87c1945afe126590906",
+    "official_md5_match": true,
+    "ratings_bytes": 24594131,
+    "ratings_rows": 1000209,
+    "ratings_sha256": "506d64ca44484487c11dc2d9a28de5c54948213e6b96285e298afe28d6ea4e0f",
+    "source_url": "https://files.grouplens.org/datasets/movielens/ml-1m.zip"
+  },
+  "formal_runs": 0,
+  "gpu_preflight": "NOT_RUN",
+  "source_worktree_sha256": {
+    "configs/movielens/movielens_bpr_seed42.yaml": "5857411c3589a067e30fe6e517fcfbc6874f5f0736b049b595e812e916c7ae07",
+    "configs/movielens/movielens_bpr_seed43.yaml": "31ba57d4a66fcc6580fa4b74d127a2c46b08669319ac837b28bd87df4cb942e1",
+    "configs/movielens/movielens_bpr_seed44.yaml": "c71f4d695e566bd953e845ae8a28e0dbc2896431b248b3954db30549f7634a5c",
+    "configs/movielens/movielens_gmf_seed42.yaml": "a330f2aa505e56e05c21e56612ebb01fafac80690ede850268fed74576e521b5",
+    "configs/movielens/movielens_gmf_seed43.yaml": "8d0f0f49f4ed7523f9ea94a455b54432f1b6b35c3a54e1a259d2b77895dbc6a4",
+    "configs/movielens/movielens_gmf_seed44.yaml": "78c1fbf0fec8862cc4a8b28c287bebaa806bfbbdfa57540448f32631da617ff8",
+    "configs/movielens/movielens_neumf_seed42.yaml": "2d822db583bda5112647c14042b0a820e0ad127c17189a90b27f9898e30f3842",
+    "configs/movielens/movielens_neumf_seed43.yaml": "a49a1923ba5764e78ec819fc37e4167e74a41591b1d28837be1dec4a7c4be393",
+    "configs/movielens/movielens_neumf_seed44.yaml": "9942a813dad55111847d363af9ffce3e8767c4e3deb00089f5a3701995023631",
+    "configs/movielens/movielens_popular.yaml": "9f83a4b400051049e4a86e5970ceebf864f0f491ce2ca0488781bc20eb58ca33",
+    "configs/movielens/movielens_weighted_neumf_seed42.yaml": "8ee62932c3c588f52b3080048fc35605464d57fa36e366d89614508be73a2925",
+    "configs/movielens/movielens_weighted_neumf_seed43.yaml": "9ef414ba69efe7a8e2913e63e81c4753350efe538f2fbc665571e32eee59f976",
+    "configs/movielens/movielens_weighted_neumf_seed44.yaml": "58f065eda255bc0f4abbb9b196eca85a124e36e6f964407fb6401e8f720ac298",
+    "src/data.py": "2860aa62b81940e38d7dc8fa8db1fcfb20eb5f838c5685d2bc8e0d223b2815a2",
+    "src/prepare.py": "f05c8a579a8734f23c3598df45c280aaa68de1ce1d0bc5da44934068f9a88f32",
+    "src/validate_artifacts.py": "51fe0c8f5dcdbaccb99a8eccd9b432c945d8523700f6aa8b070ae698075d1d5a",
+    "tests/test_movielens.py": "64452761d83ca1030490f5744d10d6a84fd6aa83e52069efcc286f75026e74ff"
+  },
+  "status": "LOCAL_PREPARATION_VERIFIED_GPU_PENDING",
+  "test_metrics_computed": false,
+  "tests_passed": 57
+}

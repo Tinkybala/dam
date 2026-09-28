@@ -1,0 +1,319 @@
+{
+  "alpha_sweep": {
+    "candidates_per_user": 100,
+    "config_path": "configs/tuning/anime_oneshot_phase_d_alpha.yaml",
+    "development_users": 10000,
+    "historical_config_sha256": "d90c3c369681b5d8f111e73856d9b9e1b49dfbf20370984d2a8fad51380676dd",
+    "recorded_release_commit": "06ffe48fa75cf3027e1651c2927a6d1c3fb66aa9",
+    "records": [
+      {
+        "alpha": 0.0,
+        "epochs_completed": 18,
+        "seed": 42,
+        "trial_id": "neumf__confidence_alpha-0p0__early_stopping_patience-5__embedding_dim-64__epochs-30__learning_rate-0p002__model-weighted_neumf__negatives_per_positive-24__positive_batch_size-2048",
+        "validation_hit_rate@10": 0.9337,
+        "validation_ndcg@10": 0.7672470124804961
+      },
+      {
+        "alpha": 0.5,
+        "epochs_completed": 18,
+        "seed": 42,
+        "trial_id": "neumf__confidence_alpha-0p5__early_stopping_patience-5__embedding_dim-64__epochs-30__learning_rate-0p002__model-weighted_neumf__negatives_per_positive-24__positive_batch_size-2048",
+        "validation_hit_rate@10": 0.9349,
+        "validation_ndcg@10": 0.7685992854167278
+      },
+      {
+        "alpha": 1.0,
+        "epochs_completed": 18,
+        "seed": 42,
+        "trial_id": "neumf__confidence_alpha-1p0__early_stopping_patience-5__embedding_dim-64__epochs-30__learning_rate-0p002__model-weighted_neumf__negatives_per_positive-24__positive_batch_size-2048",
+        "validation_hit_rate@10": 0.9349,
+        "validation_ndcg@10": 0.7676368793498769
+      },
+      {
+        "alpha": 1.5,
+        "epochs_completed": 13,
+        "seed": 42,
+        "trial_id": "neumf__confidence_alpha-1p5__early_stopping_patience-5__embedding_dim-64__epochs-30__learning_rate-0p002__model-weighted_neumf__negatives_per_positive-24__positive_batch_size-2048",
+        "validation_hit_rate@10": 0.9397,
+        "validation_ndcg@10": 0.7665177332250831
+      },
+      {
+        "alpha": 2.0,
+        "epochs_completed": 13,
+        "seed": 42,
+        "trial_id": "neumf__confidence_alpha-2p0__early_stopping_patience-5__embedding_dim-64__epochs-30__learning_rate-0p002__model-weighted_neumf__negatives_per_positive-24__positive_batch_size-2048",
+        "validation_hit_rate@10": 0.9377,
+        "validation_ndcg@10": 0.7655812169033955
+      }
+    ],
+    "selection_metric": "validation_ndcg@10",
+    "source_summary_sha256": "e54d18a40ae70316632a559cb55873210e9a6c11a9df2a9862d0bd5d52fa226f"
+  },
+  "dataset": "Anime Recommendations Database",
+  "final": {
+    "metadata_archive_sha256": "f8fbe19c4b8bacb4d8ef728155f1d5717c5e9c0e2680c922a60a3e22b7e6c74a",
+    "models": {
+      "bpr": {
+        "per_seed": [
+          {
+            "epochs_completed": 30,
+            "seed": 42,
+            "test_hit_rate@10": 0.9522555643879174,
+            "test_ndcg@10": 0.7710735537114513,
+            "total_runtime_seconds": 744.6373434271663,
+            "training_runtime_seconds": 736.1539238821715,
+            "validation_hit_rate@10": 0.9528351881293058,
+            "validation_ndcg@10": 0.7717971274588288
+          },
+          {
+            "epochs_completed": 30,
+            "seed": 43,
+            "test_hit_rate@10": 0.9532823264440912,
+            "test_ndcg@10": 0.7704172628153835,
+            "total_runtime_seconds": 740.4330310132354,
+            "training_runtime_seconds": 731.8021695949137,
+            "validation_hit_rate@10": 0.9530504769475358,
+            "validation_ndcg@10": 0.7708323762839336
+          },
+          {
+            "epochs_completed": 30,
+            "seed": 44,
+            "test_hit_rate@10": 0.9525702172760996,
+            "test_ndcg@10": 0.7708104178747692,
+            "total_runtime_seconds": 750.1293316055089,
+            "training_runtime_seconds": 741.7001460473984,
+            "validation_hit_rate@10": 0.9535638579756227,
+            "validation_ndcg@10": 0.7715361123055766
+          }
+        ]
+      },
+      "bpr_ensemble_component": {
+        "per_seed": [
+          {
+            "epochs_completed": 22,
+            "seed": 42,
+            "test_hit_rate@10": 0.9487612612612613,
+            "test_ndcg@10": 0.7901053231590796,
+            "total_runtime_seconds": 1931.3079128246754,
+            "training_runtime_seconds": 1922.652059910819,
+            "validation_hit_rate@10": 0.9490593534711181,
+            "validation_ndcg@10": 0.7900546472384541
+          },
+          {
+            "epochs_completed": 19,
+            "seed": 43,
+            "test_hit_rate@10": 0.950168918918919,
+            "test_ndcg@10": 0.7896094357652145,
+            "total_runtime_seconds": 2305.7129483669996,
+            "training_runtime_seconds": 2297.527226999402,
+            "validation_hit_rate@10": 0.9507982246952835,
+            "validation_ndcg@10": 0.7903766739915372
+          },
+          {
+            "epochs_completed": 18,
+            "seed": 44,
+            "test_hit_rate@10": 0.9512288023317436,
+            "test_ndcg@10": 0.7898468772099249,
+            "total_runtime_seconds": 1967.224037060514,
+            "training_runtime_seconds": 1958.9434307068586,
+            "validation_hit_rate@10": 0.9527358240593534,
+            "validation_ndcg@10": 0.7907250477171889
+          }
+        ]
+      },
+      "ensemble_w0p7": {
+        "per_seed": [
+          {
+            "seed": 42,
+            "test_hit_rate@10": 0.9557995495495496,
+            "test_ndcg@10": 0.7998987416092146,
+            "validation_hit_rate@10": 0.9559817170111288,
+            "validation_ndcg@10": 0.8000377777496392
+          },
+          {
+            "seed": 43,
+            "test_hit_rate@10": 0.9558989136195019,
+            "test_ndcg@10": 0.7993835238297177,
+            "validation_hit_rate@10": 0.9567766295707473,
+            "validation_ndcg@10": 0.8001463385726258
+          },
+          {
+            "seed": 44,
+            "test_hit_rate@10": 0.9573065712771595,
+            "test_ndcg@10": 0.7996907571836307,
+            "validation_hit_rate@10": 0.9588301536830949,
+            "validation_ndcg@10": 0.8002135049400607
+          }
+        ]
+      },
+      "gmf": {
+        "per_seed": [
+          {
+            "epochs_completed": 20,
+            "seed": 42,
+            "test_hit_rate@10": 0.9358108108108109,
+            "test_ndcg@10": 0.7175411551859571,
+            "total_runtime_seconds": 149.38145737536252,
+            "training_runtime_seconds": 141.33243972621858,
+            "validation_hit_rate@10": 0.9377980922098569,
+            "validation_ndcg@10": 0.7183717461602761
+          },
+          {
+            "epochs_completed": 20,
+            "seed": 43,
+            "test_hit_rate@10": 0.933707604663487,
+            "test_ndcg@10": 0.7141202042981852,
+            "total_runtime_seconds": 150.60138922929764,
+            "training_runtime_seconds": 142.50274908915162,
+            "validation_hit_rate@10": 0.9358273714891362,
+            "validation_ndcg@10": 0.7147721642459541
+          },
+          {
+            "epochs_completed": 20,
+            "seed": 44,
+            "test_hit_rate@10": 0.9356120826709062,
+            "test_ndcg@10": 0.7187993194473561,
+            "total_runtime_seconds": 148.30436107888818,
+            "training_runtime_seconds": 140.20331360027194,
+            "validation_hit_rate@10": 0.9374006359300477,
+            "validation_ndcg@10": 0.7185148311489572
+          }
+        ]
+      },
+      "mlp": {
+        "per_seed": [
+          {
+            "epochs_completed": 20,
+            "seed": 42,
+            "test_hit_rate@10": 0.9355624006359301,
+            "test_ndcg@10": 0.7164586200904082,
+            "total_runtime_seconds": 215.92152500711381,
+            "training_runtime_seconds": 207.68967343308032,
+            "validation_hit_rate@10": 0.9372350291467939,
+            "validation_ndcg@10": 0.7159981231503829
+          },
+          {
+            "epochs_completed": 20,
+            "seed": 43,
+            "test_hit_rate@10": 0.9359267355590885,
+            "test_ndcg@10": 0.7173927804745868,
+            "total_runtime_seconds": 213.3191372640431,
+            "training_runtime_seconds": 205.37955591455102,
+            "validation_hit_rate@10": 0.93771528881823,
+            "validation_ndcg@10": 0.7176165385762852
+          },
+          {
+            "epochs_completed": 20,
+            "seed": 44,
+            "test_hit_rate@10": 0.9366222840487546,
+            "test_ndcg@10": 0.7165227208860967,
+            "total_runtime_seconds": 206.88395674712956,
+            "training_runtime_seconds": 199.35622598975897,
+            "validation_hit_rate@10": 0.9380299417064123,
+            "validation_ndcg@10": 0.7178149176575035
+          }
+        ]
+      },
+      "neumf": {
+        "per_seed": [
+          {
+            "epochs_completed": 22,
+            "seed": 42,
+            "test_hit_rate@10": 0.9477344992050875,
+            "test_ndcg@10": 0.764126835939529,
+            "total_runtime_seconds": 223.71143217757344,
+            "training_runtime_seconds": 215.9939932450652,
+            "validation_hit_rate@10": 0.9498045839957605,
+            "validation_ndcg@10": 0.7661536961031968
+          },
+          {
+            "epochs_completed": 29,
+            "seed": 43,
+            "test_hit_rate@10": 0.9472542395336513,
+            "test_ndcg@10": 0.7657026215043897,
+            "total_runtime_seconds": 306.25924588367343,
+            "training_runtime_seconds": 298.24436157010496,
+            "validation_hit_rate@10": 0.9472045574986752,
+            "validation_ndcg@10": 0.7660367829049919
+          },
+          {
+            "epochs_completed": 30,
+            "seed": 44,
+            "test_hit_rate@10": 0.9462937201907791,
+            "test_ndcg@10": 0.7654718489187217,
+            "total_runtime_seconds": 298.9644858315587,
+            "training_runtime_seconds": 291.1464835014194,
+            "validation_hit_rate@10": 0.9447038950715422,
+            "validation_ndcg@10": 0.7647823607964027
+          }
+        ]
+      },
+      "popular": {
+        "per_seed": [
+          {
+            "seed": 42,
+            "test_hit_rate@10": 0.7717607313195548,
+            "test_ndcg@10": 0.5070311562624357,
+            "total_runtime_seconds": 3.094930289313197,
+            "validation_hit_rate@10": 0.7706842872284049,
+            "validation_ndcg@10": 0.5056794956640929
+          }
+        ]
+      },
+      "weighted_neumf": {
+        "per_seed": [
+          {
+            "epochs_completed": 13,
+            "seed": 42,
+            "test_hit_rate@10": 0.9466746157922629,
+            "test_ndcg@10": 0.7836897382633266,
+            "total_runtime_seconds": 217.0493031926453,
+            "training_runtime_seconds": 208.74090515822172,
+            "validation_hit_rate@10": 0.9464262056173821,
+            "validation_ndcg@10": 0.7841204303769856
+          },
+          {
+            "epochs_completed": 15,
+            "seed": 43,
+            "test_hit_rate@10": 0.9439421038685745,
+            "test_ndcg@10": 0.7838222331946612,
+            "total_runtime_seconds": 236.04256662912667,
+            "training_runtime_seconds": 228.37592121213675,
+            "validation_hit_rate@10": 0.9443561208267091,
+            "validation_ndcg@10": 0.7835788426347675
+          },
+          {
+            "epochs_completed": 11,
+            "seed": 44,
+            "test_hit_rate@10": 0.9499701907790143,
+            "test_ndcg@10": 0.7839642847054863,
+            "total_runtime_seconds": 185.30503829568624,
+            "training_runtime_seconds": 176.88531327061355,
+            "validation_hit_rate@10": 0.9507982246952835,
+            "validation_ndcg@10": 0.7839352937525087
+          }
+        ]
+      }
+    },
+    "protocol": {
+      "candidate_count_per_split": 6038400,
+      "candidates_per_user": 100,
+      "ensemble_weight_locked_before_test": 0.7,
+      "primary_metric": "test_ndcg@10",
+      "secondary_metric": "test_hit_rate@10",
+      "seed_summary": "mean and sample standard deviation over seeds 42, 43, 44",
+      "user_count": 60384
+    },
+    "source_commit": "b2f4d6b8222f9f5a9afd0633f54a235f50e52c69",
+    "summary_sha256": "b9f34504da2adf564e23ed17b3215a2d582e2b164f13fc436393ee6ea8da2ddb"
+  },
+  "schema_version": 1,
+  "verification": {
+    "alpha_config_matches_historical_commit": true,
+    "alpha_trial_metrics_source": "local phase_d_summary.json; individual run metrics not included locally",
+    "final_summary_matches_archived_sha256": true,
+    "individual_runs_cross_checked_against_archive": 19,
+    "seed_aggregates_recomputed": true
+  }
+}

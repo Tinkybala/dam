@@ -1,5 +1,16 @@
 # MovieLens 1M 与 Project 1 报告收尾操作手册
 
+> 2026-09-28 最新进度：MovieLens 数据、CUDA smoke、13 次正式运行、固定融合、
+> 汇总图和匿名案例已完成；参见
+> [正式结果记录](../evidence/movielens_transfer_results_20260928.md)。
+> 以下 Stage A–E 的命令和预期条件保留为历史执行方案；Stage F–G 的小组报告与提交包仍待整合。
+
+> 2026-09-26 进度更新：Stage A 与 Stage B 的本地代码、测试和配置检查已完成，
+> MovieLens 数据制品也已在本机生成并通过检查。candidate-lock commit、服务器部署、
+> CUDA smoke 和正式实验尚未执行。继续工作前先读
+> [本地准备记录](../evidence/movielens_local_preparation_20260926.md)；
+> 本手册末尾“先停在计划阶段”是 9 月 5 日的历史停点。
+
 ## Material Passport
 
 - Origin Skill: academic-research-suite / experiment-agent

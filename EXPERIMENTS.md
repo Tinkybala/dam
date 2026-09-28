@@ -3,6 +3,66 @@
 This file records repository-facing experiment checkpoints. Generated datasets,
 predictions, checkpoints, and raw result directories remain outside Git.
 
+## 2026-09-28 — Locked MovieLens 1M transfer completed
+
+Candidate-lock commit `c5f903579c81d9a58e051714c27e2a9483946ca9` and
+final-run commit `61863193e11650cdd579a102f172a51582502552` were deployed as
+separate releases. Data integrity, two CUDA smoke jobs, 13/13 formal model runs,
+12/12 trainable CUDA gates, three fixed ensembles, 10 deterministic anonymous
+cases and a no-bulk metadata archive passed. Formal runs did not retry, time out,
+change parameters or fall back to CPU. The final ensemble reached
+0.632039 ± 0.003126 sampled-candidate test NDCG@10 and
+0.838692 ± 0.003120 HR@10.
+
+See [the detailed transfer report](evidence/movielens_transfer_results_20260928.md),
+[machine-readable summary](evidence/movielens_transfer_summary_20260928.json),
+and [anonymous case record](evidence/movielens_case_study_20260928.json).
+
+## 2026-09-26 — Methods, setup and parameter-table draft
+
+Added implementation-matched model/loss/ensemble equations, dataset and candidate
+construction, checkpoint selection, and final parameter tables. All 19 archived
+run configurations match both the archived YAML and the current final configs.
+Verified the local raw-rating checksum against the Anime manifest, reconciled
+run populations and split counts, and recovered best epochs from validation
+histories. Source and environment hashes are recorded in
+`evidence/anime_methods_audit_20260926.json`. BPR/NCF reference metadata was checked
+against the author-deposited primary records.
+
+See [Methods/setup](docs/32_LIJIE_METHODS_AND_EXPERIMENTAL_SETUP.md) and
+[parameter tables](docs/33_LIJIE_FINAL_PARAMETER_TABLES.md). No model code,
+experiment configuration, dataset or prediction was changed in this writing step.
+
+## 2026-09-26 — Anime report figures from archived results
+
+Prepared model-comparison, component/fusion and validation-only alpha figures in
+PNG/SVG/PDF, with full-precision source tables and hashes. Cross-checked 19 model
+metrics against the verified final metadata archive and recomputed mean/sample
+SD. The actual BPR fusion component is kept separate from the standalone BPR
+baseline. Phase D alpha results remain separate from full-user final test data.
+
+See [figure captions and interpretation](docs/30_LIJIE_ANIME_REPORT_FIGURES.md).
+No retraining, new parameter selection, MovieLens execution or GPU use occurred.
+
+The v2 revision adds paired differences against standalone BPR, replaces the
+repeated component bars with all 12 seed/component/metric fusion gains, and
+marks the NDCG-selected alpha on both parameter panels. Figures now use 7.4-inch
+layouts, 300-dpi PNGs and vector exports; v1 files are preserved. An English
+[results/discussion draft](docs/31_LIJIE_ANIME_RESULTS_DISCUSSION_DRAFT.md) maps
+claims to evidence and records missing cases/transfer results. The updated
+analysis suite passes with 62 tests; the archived plotting input is unchanged.
+
+## 2026-09-26 — MovieLens local preparation, GPU pending
+
+MovieLens 1M adapter and artifact integrity gate implemented; 57 tests pass.
+Local frozen artifacts contain 6,034 users, 3,125 movies, 562,308 training
+positives, and 100 validation/test candidates per user. All 13 transferred
+configs keep test evaluation disabled. No production training or test metrics
+were run. Candidate-lock commit and CUDA preflight remain pending.
+
+See [preparation evidence](evidence/movielens_local_preparation_20260926.md) and
+its accompanying JSON for provenance, hashes and the next execution gate.
+
 ## 2026-09-02 — Anime full-user preflight benchmark
 
 ### Status

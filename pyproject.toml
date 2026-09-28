@@ -18,6 +18,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8"]
 demo = ["streamlit>=1.36"]
+analysis = ["matplotlib>=3.8,<4"]
 
 [project.scripts]
 dam-prepare = "src.prepare:main"
