@@ -113,6 +113,7 @@ def test_movie_configs_preserve_locked_hyperparameters():
     assert len(configs) == 13
     allowed = {"artifacts_dir", "output_dir", "positive_threshold", "maximum_rating", "evaluate_test"}
     outputs = set()
+    test_states = set()
     for path in configs:
         config = yaml.safe_load(path.read_text())
         model, seed = config["model"], config["seed"]
@@ -123,7 +124,8 @@ def test_movie_configs_preserve_locked_hyperparameters():
         assert {k: v for k, v in config.items() if k not in allowed} == {
             k: v for k, v in source.items() if k not in allowed
         }
-        assert config["evaluate_test"] is False
+        assert type(config["evaluate_test"]) is bool
+        test_states.add(config["evaluate_test"])
         assert config["positive_threshold"] == 4 and config["maximum_rating"] == 5
         assert seed in {42, 43, 44}
         assert config["artifacts_dir"] == "../../artifacts/movielens-1m-r4"
@@ -132,6 +134,7 @@ def test_movie_configs_preserve_locked_hyperparameters():
         outputs.add(config["output_dir"])
         if model != "popular":
             assert config["device"] == "cuda" and config["gpu_sampling"] is True
+    assert test_states == {True}, "the final-run config set must be fully unsealed"
 
 
 def test_artifact_gate_detects_tampering(ratings_file, tmp_path):
