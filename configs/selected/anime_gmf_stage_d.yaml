@@ -1,0 +1,18 @@
+model: gmf
+artifacts_dir: ../../artifacts/anime-r7
+output_dir: ../../results/selected/anime-gmf-stage-d
+seed: 42
+device: auto
+development_users_file: development_users.parquet
+positive_threshold: 7
+maximum_rating: 10
+embedding_dim: 16
+learning_rate: 0.001
+l2: 0.000001
+positive_batch_size: 2048
+eval_batch_size: 65536
+negatives_per_positive: 8
+epochs: 15
+early_stopping_patience: 3
+evaluate_test: false
+

@@ -1,0 +1,7 @@
+numpy==1.26.4
+pandas==2.2.3
+pyarrow==17.0.0
+PyYAML==6.0.2
+pytest==8.4.2
+torch==2.2.0+cu121
+

@@ -1,0 +1,12 @@
+name: anime-stage-c-dropout
+output_root: ../../results/tuning/anime-stage-c-dropout
+gpus: [0, 1]
+require_equal_trial_count: true
+base_configs:
+  - path: ../selected/anime_mlp_stage_b.yaml
+    grid:
+      dropout: [0.0, 0.2]
+  - path: ../selected/anime_neumf_stage_b.yaml
+    grid:
+      dropout: [0.0, 0.2]
+

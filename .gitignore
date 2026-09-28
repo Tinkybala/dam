@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+.venv/
+
+# Local datasets and generated experiment artifacts
+data/
+artifacts/
+results/
+checkpoints/
+*.pt
+*.pth
+
+# Local demo inference bundle (checkpoints, mappings, and histories)
+demo_bundle/

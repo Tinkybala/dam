@@ -1,0 +1,18 @@
+name: anime-stage-b-l2
+output_root: ../../results/tuning/anime-stage-b-l2
+gpus: [0, 1]
+require_equal_trial_count: true
+base_configs:
+  - path: ../selected/anime_bpr_stage_a.yaml
+    grid:
+      l2: [0.0, 0.000001, 0.00001, 0.0001]
+  - path: ../selected/anime_gmf_stage_a.yaml
+    grid:
+      l2: [0.0, 0.000001, 0.00001, 0.0001]
+  - path: ../selected/anime_mlp_stage_a.yaml
+    grid:
+      l2: [0.0, 0.000001, 0.00001, 0.0001]
+  - path: ../selected/anime_neumf_stage_a.yaml
+    grid:
+      l2: [0.0, 0.000001, 0.00001, 0.0001]
+

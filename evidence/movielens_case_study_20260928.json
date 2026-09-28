@@ -1,0 +1,336 @@
+{
+  "status": "complete",
+  "source_commit": "61863193e11650cdd579a102f172a51582502552",
+  "seed": 42,
+  "selection_rule": "lowest source user IDs, up to 2 per category",
+  "protocol": "one test positive plus 99 fixed negatives per warm user",
+  "category_counts": {
+    "rank_one_success": 2670,
+    "rank_ten_boundary": 98,
+    "miss_after_ten": 995,
+    "bpr_hit_weighted_miss": 288,
+    "weighted_hit_bpr_miss": 398
+  },
+  "cases": [
+    {
+      "category": "rank_one_success",
+      "positive_movie_id": 1962,
+      "positive_title": "Driving Miss Daisy (1989)",
+      "positive_rank": {
+        "bpr": 1,
+        "weighted_neumf": 1,
+        "ensemble": 1
+      },
+      "training_positive_count": 43,
+      "observed_count": 53,
+      "training_history_preview": [
+        "Toy Story (1995)",
+        "Pocahontas (1995)",
+        "Apollo 13 (1995)",
+        "Schindler's List (1993)",
+        "Beauty and the Beast (1991)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Driving Miss Daisy (1989)",
+        "Contact (1997)",
+        "Truman Show, The (1998)",
+        "League of Their Own, A (1992)",
+        "Man on the Moon (1999)",
+        "Far Off Place, A (1993)",
+        "Witness (1985)",
+        "Sword in the Stone, The (1963)",
+        "Rainmaker, The (1997)",
+        "Lawrence of Arabia (1962)"
+      ],
+      "case_label": "Case 01"
+    },
+    {
+      "category": "rank_one_success",
+      "positive_movie_id": 2115,
+      "positive_title": "Indiana Jones and the Temple of Doom (1984)",
+      "positive_rank": {
+        "bpr": 1,
+        "weighted_neumf": 1,
+        "ensemble": 1
+      },
+      "training_positive_count": 35,
+      "observed_count": 51,
+      "training_history_preview": [
+        "Star Wars: Episode IV - A New Hope (1977)",
+        "Rock, The (1996)",
+        "Fish Called Wanda, A (1988)",
+        "Monty Python and the Holy Grail (1974)",
+        "Princess Bride, The (1987)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Indiana Jones and the Temple of Doom (1984)",
+        "Crow, The (1994)",
+        "Rocky (1976)",
+        "And Now for Something Completely Different (1971)",
+        "Clear and Present Danger (1994)",
+        "As Good As It Gets (1997)",
+        "GoldenEye (1995)",
+        "Fallen (1998)",
+        "True Grit (1969)",
+        "Army of Darkness (1993)"
+      ],
+      "case_label": "Case 02"
+    },
+    {
+      "category": "rank_ten_boundary",
+      "positive_movie_id": 3447,
+      "positive_title": "Good Earth, The (1937)",
+      "positive_rank": {
+        "bpr": 14,
+        "weighted_neumf": 11,
+        "ensemble": 10
+      },
+      "training_positive_count": 303,
+      "observed_count": 401,
+      "training_history_preview": [
+        "Toy Story (1995)",
+        "Jumanji (1995)",
+        "Twelve Monkeys (1995)",
+        "Mr. Holland's Opus (1995)",
+        "Apollo 13 (1995)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Twister (1996)",
+        "Some Like It Hot (1959)",
+        "Desperately Seeking Susan (1985)",
+        "Birds, The (1963)",
+        "Sense and Sensibility (1995)",
+        "Grumpy Old Men (1993)",
+        "Robocop (1987)",
+        "Goldfinger (1964)",
+        "Poltergeist (1982)",
+        "Good Earth, The (1937)"
+      ],
+      "case_label": "Case 03"
+    },
+    {
+      "category": "rank_ten_boundary",
+      "positive_movie_id": 1206,
+      "positive_title": "Clockwork Orange, A (1971)",
+      "positive_rank": {
+        "bpr": 14,
+        "weighted_neumf": 8,
+        "ensemble": 10
+      },
+      "training_positive_count": 141,
+      "observed_count": 255,
+      "training_history_preview": [
+        "Toy Story (1995)",
+        "GoldenEye (1995)",
+        "Die Hard: With a Vengeance (1995)",
+        "Clerks (1994)",
+        "Star Trek: Generations (1994)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Negotiator, The (1998)",
+        "Fantasia 2000 (1999)",
+        "Honey, I Shrunk the Kids (1989)",
+        "In the Mouth of Madness (1995)",
+        "Goonies, The (1985)",
+        "Swiss Family Robinson (1960)",
+        "Bone Collector, The (1999)",
+        "Game, The (1997)",
+        "Desperado (1995)",
+        "Clockwork Orange, A (1971)"
+      ],
+      "case_label": "Case 04"
+    },
+    {
+      "category": "miss_after_ten",
+      "positive_movie_id": 1095,
+      "positive_title": "Glengarry Glen Ross (1992)",
+      "positive_rank": {
+        "bpr": 19,
+        "weighted_neumf": 8,
+        "ensemble": 16
+      },
+      "training_positive_count": 80,
+      "observed_count": 198,
+      "training_history_preview": [
+        "City of Lost Children, The (1995)",
+        "Usual Suspects, The (1995)",
+        "Maltese Falcon, The (1941)",
+        "Big Night (1996)",
+        "Beautiful Thing (1996)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Schindler's List (1993)",
+        "Six Degrees of Separation (1993)",
+        "Braveheart (1995)",
+        "Jurassic Park (1993)",
+        "English Patient, The (1996)",
+        "Pee-wee's Big Adventure (1985)",
+        "Clockwork Orange, A (1971)",
+        "Mr. Death: The Rise and Fall of Fred A. Leuchter Jr. (1999)",
+        "Paradise Lost: The Child Murders at Robin Hood Hills (1996)",
+        "Man on the Moon (1999)"
+      ],
+      "case_label": "Case 05"
+    },
+    {
+      "category": "miss_after_ten",
+      "positive_movie_id": 269,
+      "positive_title": "My Crazy Life (Mi vida loca) (1993)",
+      "positive_rank": {
+        "bpr": 42,
+        "weighted_neumf": 31,
+        "ensemble": 40
+      },
+      "training_positive_count": 83,
+      "observed_count": 139,
+      "training_history_preview": [
+        "Leaving Las Vegas (1995)",
+        "Postino, Il (The Postman) (1994)",
+        "Braveheart (1995)",
+        "Taxi Driver (1976)",
+        "Desperado (1995)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Last of the Mohicans, The (1992)",
+        "Being John Malkovich (1999)",
+        "Hamlet (1990)",
+        "Cape Fear (1991)",
+        "Chungking Express (1994)",
+        "American Psycho (2000)",
+        "Negotiator, The (1998)",
+        "Lawnmower Man, The (1992)",
+        "Time to Kill, A (1996)",
+        "Out of Africa (1985)"
+      ],
+      "case_label": "Case 06"
+    },
+    {
+      "category": "bpr_hit_weighted_miss",
+      "positive_movie_id": 2707,
+      "positive_title": "Arlington Road (1999)",
+      "positive_rank": {
+        "bpr": 8,
+        "weighted_neumf": 12,
+        "ensemble": 8
+      },
+      "training_positive_count": 18,
+      "observed_count": 24,
+      "training_history_preview": [
+        "Forrest Gump (1994)",
+        "Princess Bride, The (1987)",
+        "When Harry Met Sally... (1989)",
+        "Prince of Egypt, The (1998)",
+        "Shakespeare in Love (1998)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Toy Story (1995)",
+        "Pretty in Pink (1986)",
+        "Mr. Mom (1983)",
+        "Grease (1978)",
+        "About Last Night... (1986)",
+        "Breakfast Club, The (1985)",
+        "Three Amigos! (1986)",
+        "Arlington Road (1999)",
+        "Speechless (1994)",
+        "Home Alone (1990)"
+      ],
+      "case_label": "Case 07"
+    },
+    {
+      "category": "bpr_hit_weighted_miss",
+      "positive_movie_id": 1187,
+      "positive_title": "Passion Fish (1992)",
+      "positive_rank": {
+        "bpr": 7,
+        "weighted_neumf": 14,
+        "ensemble": 9
+      },
+      "training_positive_count": 28,
+      "observed_count": 43,
+      "training_history_preview": [
+        "American President, The (1995)",
+        "Antonia's Line (Antonia) (1995)",
+        "Strictly Ballroom (1992)",
+        "Star Wars: Episode VI - Return of the Jedi (1983)",
+        "Butch Cassidy and the Sundance Kid (1969)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Hurricane, The (1999)",
+        "Rain Man (1988)",
+        "Basic Instinct (1992)",
+        "Mrs. Brown (Her Majesty, Mrs. Brown) (1997)",
+        "Once Were Warriors (1994)",
+        "Matrix, The (1999)",
+        "X-Men (2000)",
+        "Leaving Las Vegas (1995)",
+        "Passion Fish (1992)",
+        "Grand Canyon (1991)"
+      ],
+      "case_label": "Case 08"
+    },
+    {
+      "category": "weighted_hit_bpr_miss",
+      "positive_movie_id": 1095,
+      "positive_title": "Glengarry Glen Ross (1992)",
+      "positive_rank": {
+        "bpr": 19,
+        "weighted_neumf": 8,
+        "ensemble": 16
+      },
+      "training_positive_count": 80,
+      "observed_count": 198,
+      "training_history_preview": [
+        "City of Lost Children, The (1995)",
+        "Usual Suspects, The (1995)",
+        "Maltese Falcon, The (1941)",
+        "Big Night (1996)",
+        "Beautiful Thing (1996)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Schindler's List (1993)",
+        "Six Degrees of Separation (1993)",
+        "Braveheart (1995)",
+        "Jurassic Park (1993)",
+        "English Patient, The (1996)",
+        "Pee-wee's Big Adventure (1985)",
+        "Clockwork Orange, A (1971)",
+        "Mr. Death: The Rise and Fall of Fred A. Leuchter Jr. (1999)",
+        "Paradise Lost: The Child Murders at Robin Hood Hills (1996)",
+        "Man on the Moon (1999)"
+      ],
+      "case_label": "Case 09"
+    },
+    {
+      "category": "weighted_hit_bpr_miss",
+      "positive_movie_id": 1206,
+      "positive_title": "Clockwork Orange, A (1971)",
+      "positive_rank": {
+        "bpr": 14,
+        "weighted_neumf": 8,
+        "ensemble": 10
+      },
+      "training_positive_count": 141,
+      "observed_count": 255,
+      "training_history_preview": [
+        "Toy Story (1995)",
+        "GoldenEye (1995)",
+        "Die Hard: With a Vengeance (1995)",
+        "Clerks (1994)",
+        "Star Trek: Generations (1994)"
+      ],
+      "top_ten_sampled_candidate_titles": [
+        "Negotiator, The (1998)",
+        "Fantasia 2000 (1999)",
+        "Honey, I Shrunk the Kids (1989)",
+        "In the Mouth of Madness (1995)",
+        "Goonies, The (1985)",
+        "Swiss Family Robinson (1960)",
+        "Bone Collector, The (1999)",
+        "Game, The (1997)",
+        "Desperado (1995)",
+        "Clockwork Orange, A (1971)"
+      ],
+      "case_label": "Case 10"
+    }
+  ]
+}

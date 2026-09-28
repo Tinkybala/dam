@@ -1,13 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "dam" 
+name = "dam-recommender"
 version = "0.1.0"
-description = "ntu dam project 1"
-requires-python = ">=3.10"
+description = "Recommender-system technical review and Top-N experiments"
+requires-python = ">=3.11"
 dependencies = [
-    "kagglehub[hf-datasets]>=1.0.2",
+  "kagglehub[hf-datasets]>=1.0.2",
+  "numpy>=1.26,<2",
+  "pandas>=2.1",
+  "pyarrow>=14",
+  "PyYAML>=6",
+  "requests>=2.31",
+  "torch>=2.1,<2.3",
 ]
 
-[dependency-groups]
-dev = [
-    "jupyterlab>=4.6.3",
-]
+[project.optional-dependencies]
+dev = ["pytest>=8", "jupyterlab>=4.6.3"]
+demo = ["streamlit>=1.36"]
+analysis = ["matplotlib>=3.8,<4"]
+
+[project.scripts]
+dam-prepare = "src.prepare:main"
+dam-train = "src.train:main"
+dam-tune = "src.tune:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.setuptools.packages.find]
+include = ["src*"]
