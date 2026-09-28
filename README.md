@@ -64,6 +64,19 @@ See the [MovieLens transfer report](evidence/movielens_transfer_results_20260928
 - Full-catalog Top-10 recommendations
 - Locally cached anime posters
 
+The screenshots below come from the running offline demo. They show anonymous
+known users; the formal NDCG and Hit Rate above use a separate 100-candidate
+test protocol.
+
+[![Chinese demo showing an anonymous user's history and Top-10 recommendations](docs/images/demo-overview-zh.png)](docs/images/demo-overview-zh.png)
+
+<details>
+<summary>English view: Top-10 recommendations for another anonymous user</summary>
+
+[![English demo showing the Top-10 recommendation grid](docs/images/demo-recommendations-en.png)](docs/images/demo-recommendations-en.png)
+
+</details>
+
 ```bash
 python -m pip install -e ".[demo]"
 python -m streamlit run demo/app.py
