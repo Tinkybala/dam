@@ -1,0 +1,22 @@
+name: anime-stage-a-embedding-learning-rate
+output_root: ../../results/tuning/anime-stage-a
+gpus: [0, 1]
+require_equal_trial_count: true
+base_configs:
+  - path: ../anime_bpr_dev.yaml
+    grid:
+      embedding_dim: [16, 32, 64]
+      learning_rate: [0.0001, 0.0005, 0.001]
+  - path: ../anime_gmf_dev.yaml
+    grid:
+      embedding_dim: [16, 32, 64]
+      learning_rate: [0.0001, 0.0005, 0.001]
+  - path: ../anime_mlp_dev.yaml
+    grid:
+      embedding_dim: [16, 32, 64]
+      learning_rate: [0.0001, 0.0005, 0.001]
+  - path: ../anime_neumf_dev.yaml
+    grid:
+      embedding_dim: [16, 32, 64]
+      learning_rate: [0.0001, 0.0005, 0.001]
+

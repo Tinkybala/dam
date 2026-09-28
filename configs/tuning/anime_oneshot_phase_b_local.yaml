@@ -1,0 +1,17 @@
+name: anime-oneshot-phase-b-local
+output_root: ../../results/tuning/anime-oneshot-phase-b-local
+gpus: [0, 1]
+require_equal_trial_count: true
+base_configs:
+  - path: ../selected/anime_bpr_stage_d.yaml
+    grid:
+      early_stopping_patience: [5]
+      epochs: [30]
+      learning_rate: [0.00075, 0.001, 0.00125]
+      negatives_per_positive: [12, 16, 24]
+  - path: ../selected/anime_neumf_stage_e.yaml
+    grid:
+      early_stopping_patience: [5]
+      epochs: [30]
+      learning_rate: [0.0015, 0.002, 0.0025]
+      negatives_per_positive: [12, 16, 24]

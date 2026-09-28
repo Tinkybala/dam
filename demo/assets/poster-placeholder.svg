@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420" role="img" aria-labelledby="title desc">
+  <title id="title">Poster unavailable</title>
+  <desc id="desc">Neutral placeholder for an anime without a cached poster.</desc>
+  <rect width="300" height="420" fill="#e9edf3"/>
+  <rect x="70" y="105" width="160" height="125" rx="12" fill="#c3ccd8"/>
+  <circle cx="120" cy="150" r="22" fill="#e9edf3"/>
+  <path d="M80 215l52-48 34 31 30-25 24 42z" fill="#e9edf3"/>
+  <text x="150" y="282" text-anchor="middle" font-family="sans-serif" font-size="18" fill="#536274">Poster unavailable</text>
+</svg>
