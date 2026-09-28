@@ -1,4 +1,4 @@
-"""Train and evaluate the initial Most Popular and BPR-MF baselines."""
+"""Train and evaluate the configured recommendation models."""
 
 from __future__ import annotations
 
@@ -6,7 +6,9 @@ import argparse
 import os
 import subprocess
 import time
+from collections.abc import Callable, Iterator
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -151,25 +153,13 @@ def _run_bpr(
         weight_decay=float(config.get("l2", 0.0)),
     )
     rng = np.random.default_rng(seed)
-    epochs = int(config.get("epochs", 5))
-    patience = int(config.get("early_stopping_patience", 3))
     batch_size = int(config.get("batch_size", 4096))
-    eval_batch_size = int(config.get("eval_batch_size", 65536))
     negatives = int(config.get("negatives_per_positive", 1))
-    best_ndcg = -1.0
-    best_state: dict[str, torch.Tensor] | None = None
-    history: list[dict[str, float]] = []
-    stale_epochs = 0
-
-    training_started = time.perf_counter()
     gpu_sampling = device.type == "cuda" and bool(config.get("gpu_sampling", True))
-    for epoch in range(1, epochs + 1):
-        model.train()
-        loss_sum = 0.0
-        example_count = 0
-        epoch_started = time.perf_counter()
+
+    def batches() -> Iterator[tuple]:
         if gpu_sampling:
-            batches = iter_bpr_batches_torch(
+            return iter_bpr_batches_torch(
                 train_users,
                 train_items,
                 codes,
@@ -178,85 +168,24 @@ def _run_bpr(
                 negatives,
                 device,
             )
-        else:
-            batches = iter_bpr_batches(
-                train_users,
-                train_items,
-                codes,
-                item_count,
-                batch_size,
-                negatives,
-                rng,
-            )
-        for batch_users, batch_positives, batch_negatives in batches:
-            if gpu_sampling:
-                users_tensor = batch_users
-                positives_tensor = batch_positives
-                negatives_tensor = batch_negatives
-            else:
-                users_tensor = torch.from_numpy(batch_users).to(device)
-                positives_tensor = torch.from_numpy(batch_positives).to(device)
-                negatives_tensor = torch.from_numpy(batch_negatives).to(device)
-            optimizer.zero_grad(set_to_none=True)
-            loss = model.pairwise_loss(users_tensor, positives_tensor, negatives_tensor)
-            if not torch.isfinite(loss):
-                raise RuntimeError("non-finite BPR loss")
-            loss.backward()
-            optimizer.step()
-            batch_count = len(batch_users)
-            loss_sum += float(loss.detach()) * batch_count
-            example_count += batch_count
-
-        validation_predictions = score_candidates(
-            model,
-            validation_candidates,
-            user_mapping,
-            item_mapping,
-            device,
-            eval_batch_size,
+        return iter_bpr_batches(
+            train_users, train_items, codes, item_count, batch_size, negatives, rng
         )
-        validation = aggregate_metrics(validation_predictions, k=10)
-        epoch_record = {
-            "epoch": epoch,
-            "loss": loss_sum / example_count,
-            "validation_ndcg@10": validation["ndcg@10"],
-            "validation_hit_rate@10": validation["hit_rate@10"],
-            "seconds": time.perf_counter() - epoch_started,
-        }
-        history.append(epoch_record)
-        if validation["ndcg@10"] > best_ndcg:
-            best_ndcg = validation["ndcg@10"]
-            best_state = {key: value.detach().cpu().clone() for key, value in model.state_dict().items()}
-            stale_epochs = 0
-        else:
-            stale_epochs += 1
-            if stale_epochs >= patience:
-                break
 
-    if best_state is None:
-        raise RuntimeError("BPR training produced no checkpoint")
-    model.load_state_dict(best_state)
-    model.to(device)
-    validation_predictions = score_candidates(
-        model, validation_candidates, user_mapping, item_mapping, device, eval_batch_size
+    return _fit_and_evaluate(
+        model=model,
+        optimizer=optimizer,
+        batch_factory=batches,
+        mode="BPR",
+        config=config,
+        validation_candidates=validation_candidates,
+        test_candidates=test_candidates,
+        user_mapping=user_mapping,
+        item_mapping=item_mapping,
+        device=device,
+        output=output,
+        gpu_sampling=gpu_sampling,
     )
-    validation_predictions.to_parquet(output / "validation_predictions.parquet", index=False)
-    torch.save(best_state, output / "model.pt")
-    result = {
-        "device": str(device),
-        "epochs_completed": len(history),
-        "training_runtime_seconds": time.perf_counter() - training_started,
-        "gpu_sampling": gpu_sampling,
-        "history": history,
-        "validation": aggregate_metrics(validation_predictions, k=10),
-    }
-    if test_candidates is not None:
-        test_predictions = score_candidates(
-            model, test_candidates, user_mapping, item_mapping, device, eval_batch_size
-        )
-        test_predictions.to_parquet(output / "test_predictions.parquet", index=False)
-        result["test"] = aggregate_metrics(test_predictions, k=10)
-    return result
 
 
 def _run_pointwise(
@@ -310,25 +239,13 @@ def _run_pointwise(
         weight_decay=float(config.get("l2", 0.0)),
     )
     rng = np.random.default_rng(seed)
-    epochs = int(config.get("epochs", 5))
-    patience = int(config.get("early_stopping_patience", 3))
     positive_batch_size = int(config.get("positive_batch_size", 2048))
-    eval_batch_size = int(config.get("eval_batch_size", 65536))
     negative_count = int(config.get("negatives_per_positive", 1))
-    best_ndcg = -1.0
-    best_state: dict[str, torch.Tensor] | None = None
-    history: list[dict[str, float]] = []
-    stale_epochs = 0
-    training_started = time.perf_counter()
     gpu_sampling = device.type == "cuda" and bool(config.get("gpu_sampling", True))
 
-    for epoch in range(1, epochs + 1):
-        model.train()
-        loss_sum = 0.0
-        example_count = 0
-        epoch_started = time.perf_counter()
+    def batches() -> Iterator[tuple]:
         if gpu_sampling:
-            batches = iter_pointwise_batches_torch(
+            return iter_pointwise_batches_torch(
                 train_users,
                 train_items,
                 positive_weights,
@@ -338,57 +255,99 @@ def _run_pointwise(
                 negative_count,
                 device,
             )
-        else:
-            batches = iter_pointwise_batches(
-                train_users,
-                train_items,
-                positive_weights,
-                codes,
-                item_count,
-                positive_batch_size,
-                negative_count,
-                rng,
+        return iter_pointwise_batches(
+            train_users, train_items, positive_weights, codes, item_count,
+            positive_batch_size, negative_count, rng,
+        )
+
+    result = _fit_and_evaluate(
+        model=model,
+        optimizer=optimizer,
+        batch_factory=batches,
+        mode="pointwise",
+        config=config,
+        validation_candidates=validation_candidates,
+        test_candidates=test_candidates,
+        user_mapping=user_mapping,
+        item_mapping=item_mapping,
+        device=device,
+        output=output,
+        gpu_sampling=gpu_sampling,
+    )
+    result["confidence_alpha"] = alpha
+    result["mean_positive_weight"] = float(positive_weights.mean())
+    return result
+
+
+def _fit_and_evaluate(
+    model: torch.nn.Module,
+    optimizer: torch.optim.Optimizer,
+    batch_factory: Callable[[], Iterator[tuple]],
+    mode: Literal["BPR", "pointwise"],
+    config: dict[str, object],
+    validation_candidates: pd.DataFrame,
+    test_candidates: pd.DataFrame | None,
+    user_mapping: pd.Series,
+    item_mapping: pd.Series,
+    device: torch.device,
+    output: Path,
+    gpu_sampling: bool,
+) -> dict[str, object]:
+    """Share checkpoint selection and output handling across trainable models."""
+    epochs = int(config.get("epochs", 5))
+    patience = int(config.get("early_stopping_patience", 3))
+    eval_batch_size = int(config.get("eval_batch_size", 65536))
+    best_ndcg = -1.0
+    best_state: dict[str, torch.Tensor] | None = None
+    history: list[dict[str, float]] = []
+    stale_epochs = 0
+    training_started = time.perf_counter()
+
+    for epoch in range(1, epochs + 1):
+        model.train()
+        loss_sum = 0.0
+        example_count = 0
+        epoch_started = time.perf_counter()
+        for raw_batch in batch_factory():
+            batch = (
+                raw_batch if gpu_sampling
+                else tuple(torch.from_numpy(values).to(device) for values in raw_batch)
             )
-        for batch_users, batch_items, labels, weights in batches:
-            if gpu_sampling:
-                users_tensor = batch_users
-                items_tensor = batch_items
-                labels_tensor = labels
-                weights_tensor = weights
-            else:
-                users_tensor = torch.from_numpy(batch_users).to(device)
-                items_tensor = torch.from_numpy(batch_items).to(device)
-                labels_tensor = torch.from_numpy(labels).to(device)
-                weights_tensor = torch.from_numpy(weights).to(device)
             optimizer.zero_grad(set_to_none=True)
-            logits = model(users_tensor, items_tensor)
-            losses = torch.nn.functional.binary_cross_entropy_with_logits(
-                logits, labels_tensor, reduction="none"
-            )
-            loss = (losses * weights_tensor).mean()
+            if mode == "BPR":
+                loss = model.pairwise_loss(*batch)
+            else:
+                logits = model(batch[0], batch[1])
+                losses = torch.nn.functional.binary_cross_entropy_with_logits(
+                    logits, batch[2], reduction="none"
+                )
+                loss = (losses * batch[3]).mean()
             if not torch.isfinite(loss):
-                raise RuntimeError("non-finite pointwise loss")
+                raise RuntimeError(f"non-finite {mode} loss")
             loss.backward()
             optimizer.step()
-            loss_sum += float(loss.detach()) * len(batch_users)
-            example_count += len(batch_users)
+            batch_count = len(raw_batch[0])
+            loss_sum += float(loss.detach()) * batch_count
+            example_count += batch_count
 
         validation_predictions = score_candidates(
-            model, validation_candidates, user_mapping, item_mapping, device, eval_batch_size
+            model, validation_candidates, user_mapping, item_mapping, device,
+            eval_batch_size,
         )
         validation = aggregate_metrics(validation_predictions, k=10)
-        history.append(
-            {
-                "epoch": epoch,
-                "loss": loss_sum / example_count,
-                "validation_ndcg@10": validation["ndcg@10"],
-                "validation_hit_rate@10": validation["hit_rate@10"],
-                "seconds": time.perf_counter() - epoch_started,
-            }
-        )
+        history.append({
+            "epoch": epoch,
+            "loss": loss_sum / example_count,
+            "validation_ndcg@10": validation["ndcg@10"],
+            "validation_hit_rate@10": validation["hit_rate@10"],
+            "seconds": time.perf_counter() - epoch_started,
+        })
         if validation["ndcg@10"] > best_ndcg:
             best_ndcg = validation["ndcg@10"]
-            best_state = {key: value.detach().cpu().clone() for key, value in model.state_dict().items()}
+            best_state = {
+                key: value.detach().cpu().clone()
+                for key, value in model.state_dict().items()
+            }
             stale_epochs = 0
         else:
             stale_epochs += 1
@@ -396,18 +355,17 @@ def _run_pointwise(
                 break
 
     if best_state is None:
-        raise RuntimeError("pointwise training produced no checkpoint")
+        raise RuntimeError(f"{mode} training produced no checkpoint")
     model.load_state_dict(best_state)
     model.to(device)
     validation_predictions = score_candidates(
-        model, validation_candidates, user_mapping, item_mapping, device, eval_batch_size
+        model, validation_candidates, user_mapping, item_mapping, device,
+        eval_batch_size,
     )
     validation_predictions.to_parquet(output / "validation_predictions.parquet", index=False)
     torch.save(best_state, output / "model.pt")
     result = {
         "device": str(device),
-        "confidence_alpha": alpha,
-        "mean_positive_weight": float(positive_weights.mean()),
         "epochs_completed": len(history),
         "training_runtime_seconds": time.perf_counter() - training_started,
         "gpu_sampling": gpu_sampling,
@@ -416,7 +374,8 @@ def _run_pointwise(
     }
     if test_candidates is not None:
         test_predictions = score_candidates(
-            model, test_candidates, user_mapping, item_mapping, device, eval_batch_size
+            model, test_candidates, user_mapping, item_mapping, device,
+            eval_batch_size,
         )
         test_predictions.to_parquet(output / "test_predictions.parquet", index=False)
         result["test"] = aggregate_metrics(test_predictions, k=10)
