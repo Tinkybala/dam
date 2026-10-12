@@ -310,6 +310,51 @@ The final test result estimates how well the selected content representation gen
 
 ---
 
+## 📊 Experiment results
+
+The full experiment evaluated **60,384 users**. Each user had one hidden positive anime and 99 fixed unobserved candidates in both validation and test.
+
+### Validation ablation
+
+| Configuration | Features | NDCG@10 | Hit Rate@10 |
+| --- | --- | ---: | ---: |
+| C1 | Genre | 0.218531 | 0.393349 |
+| C2 | Genre + type | 0.235430 | 0.417809 |
+| C3 | Genre + type + episode bucket | 0.242140 | 0.427232 |
+| **C4** | **Genre + title** | **0.261212** | **0.470356** |
+
+Adding type and episode length improved the genre-only model. Title TF-IDF produced the largest improvement, so **C4 was selected using validation NDCG@10**.
+
+### Final test result
+
+| Selected configuration | NDCG@10 | Hit Rate@10 | Users |
+| --- | ---: | ---: | ---: |
+| **C4: Genre + title** | **0.259747** | **0.469114** | 60,384 |
+
+The hidden positive appeared in the top 10 for approximately **46.9% of users**. NDCG@10 was lower because it also rewards placing the positive near the very top of the list.
+
+### Popularity reference
+
+The shared popularity baseline achieved validation NDCG@10 of **0.505679** and Hit Rate@10 of **0.770684**.
+
+This does not invalidate the content model. It shows that, for warm anime with substantial interaction history, popularity is a strong signal that genre, type, episode length, and title alone do not capture. Content representations may still help explain recommendations and support items with limited interaction data, but this experiment does not directly test cold-start performance.
+
+### Main conclusion
+
+~~~text
+Genre only
+    ↓ add type and episode information
+Moderate improvement
+    ↓ add title words and phrases
+Best content configuration: C4
+    ↓ compare with popularity
+Content alone remains insufficient for the strongest warm-item ranking
+~~~
+
+The next practical step would be a hybrid recommender that combines content similarity with popularity or collaborative scores.
+
+---
+
 ## ⚠️ Special metadata case
 
 Anime 33242, **IS: Infinite Stratos 2 - Infinite Wedding**, has no genre but remains in the shared anime universe.
