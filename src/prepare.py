@@ -1,9 +1,8 @@
-"""Freeze Anime or MovieLens experiment artifacts without training a model."""
+"""Prepare fixed train/validation/test splits for the recommendation experiments."""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from dataclasses import asdict
 from datetime import datetime, timezone
@@ -45,9 +44,7 @@ def prepare(args: argparse.Namespace) -> dict[str, object]:
     output = args.output.resolve()
     if output.exists() and (not output.is_dir() or any(output.iterdir())):
         raise FileExistsError(f"refusing to overwrite non-empty artifact path: {output}")
-    dataset = getattr(args, "dataset", "anime")
-    if dataset not in {"anime", "movielens-1m"}:
-        raise ValueError(f"unsupported dataset: {dataset}")
+    dataset = args.dataset
     movie = dataset == "movielens-1m"
     threshold = args.positive_threshold
     if threshold is None:
@@ -63,12 +60,14 @@ def prepare(args: argparse.Namespace) -> dict[str, object]:
     if core.empty:
         raise ValueError("positive k-core is empty")
 
+    # Hold out two positives per user: one for model selection, one for testing.
     split = leave_two_out_split(core, args.seed)
     eligible_users = sorted(split.train["user_id"].unique())
     warm_items = sorted(split.train["anime_id"].unique())
     development_users = _fixed_user_sample(
         eligible_users, args.development_user_count, args.seed
     )
+    # Exclude every observed item from negatives, including low/unrated scores.
     observed = build_observed_sets(deduplicated, eligible_users)
     observed_interactions = deduplicated.loc[
         deduplicated["user_id"].isin(eligible_users)
@@ -82,6 +81,7 @@ def prepare(args: argparse.Namespace) -> dict[str, object]:
         args.negative_count,
         args.seed,
     )
+    # Save both candidate sets once so all models rank the same items.
     test_candidates = sample_evaluation_candidates(
         split.test,
         observed,
@@ -114,7 +114,6 @@ def prepare(args: argparse.Namespace) -> dict[str, object]:
         "dataset": "movielens_1m" if movie else "anime_recommendations_database",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "ratings_file": ratings_path.name,
-        "ratings_sha256": _sha256(ratings_path),
         "raw_row_count": len(raw),
         "ambiguous_pair_count": ambiguous_pair_count,
         "removed_duplicate_row_count": len(raw) - len(deduplicated),
@@ -138,7 +137,7 @@ def prepare(args: argparse.Namespace) -> dict[str, object]:
         "observed_items_excluded_from_negatives": True,
         "split_strategy": "seeded_random_leave_two_out_with_warm_item_repair",
         "files": {
-            name: {"rows": len(frame), "sha256": _sha256(output / name)}
+            name: {"rows": len(frame)}
             for name, frame in frames.items()
         },
     }
@@ -146,14 +145,6 @@ def prepare(args: argparse.Namespace) -> dict[str, object]:
         json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     return manifest
-
-
-def _sha256(path: Path, chunk_size: int = 1024 * 1024) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        while chunk := stream.read(chunk_size):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _id_mapping(

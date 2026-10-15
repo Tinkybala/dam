@@ -61,9 +61,37 @@ The local `demo_bundle/` is required and is not stored in Git. See
 
 ## Development
 
-MovieLens 1M local data preparation and 13 test-sealed configurations are ready;
-CUDA preflight and formal experiments are pending GPU availability. See the
-[local preparation checkpoint](evidence/movielens_local_preparation_20260926.md).
+Read the implementation in this order:
+
+| File | What it does |
+|---|---|
+| `src/data.py` | Filter ratings, split positives and sample unseen candidates |
+| `src/prepare.py` | Save fixed splits, ID mappings and experiment settings |
+| `src/models/` | Popularity, BPR, GMF, MLP and NeuMF scoring functions |
+| `src/training.py` | Negative sampling, confidence weights and batched scoring |
+| `src/train.py` | Train, select the best validation epoch and evaluate |
+| `src/evaluate.py` | HR@10 and NDCG@10 for one held-out positive |
+| `src/ensemble.py` | Combine BPR and Weighted NeuMF percentile ranks |
+
+For Anime, place the original `rating.csv` in `data/`, then run:
+
+```bash
+python -m src.prepare --ratings data/rating.csv --output artifacts/anime-r7
+python -m src.train --config configs/final/anime_bpr_final_seed42.yaml
+```
+
+The final configuration uses CUDA. For a small CPU run, copy the YAML within
+the same configuration directory and set
+`device: cpu`, `gpu_sampling: false`, `max_users: 100` and `epochs: 2`;
+use a separate `output_dir`. Config paths are resolved relative to the YAML file.
+The saved `metrics.json` contains validation/test scores, while `model.pt`
+contains the best validation checkpoint. Dataset and model files are not part
+of the source-code submission.
+
+Checks focus on the evaluation assumptions: disjoint splits, unseen negatives,
+one held-out positive and matching ensemble candidates. The preparation and
+demo paths do not require file checksums. `ops/` and the experiment notes record
+the earlier server runs; they are not needed to follow the model implementation.
 
 ```bash
 python -m pip install -e ".[dev]"

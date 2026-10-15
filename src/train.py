@@ -1,4 +1,4 @@
-"""Train and evaluate the initial Most Popular and BPR-MF baselines."""
+"""Train one model, select its best validation checkpoint, then optionally test it."""
 
 from __future__ import annotations
 
@@ -56,6 +56,7 @@ def train_from_config(config_path: Path) -> dict[str, object]:
     validation_candidates = _load_candidates(
         artifacts / "validation_candidates.parquet", selected_users
     )
+    # Tuning uses validation only; test scoring is enabled explicitly for final runs.
     test_candidates = (
         _load_candidates(artifacts / "test_candidates.parquet", selected_users)
         if bool(config.get("evaluate_test", False))
@@ -224,8 +225,10 @@ def _run_bpr(
             "seconds": time.perf_counter() - epoch_started,
         }
         history.append(epoch_record)
+        # Select checkpoints using validation NDCG only, never test performance.
         if validation["ndcg@10"] > best_ndcg:
             best_ndcg = validation["ndcg@10"]
+            # Copy tensors so subsequent optimizer steps cannot alter this checkpoint.
             best_state = {key: value.detach().cpu().clone() for key, value in model.state_dict().items()}
             stale_epochs = 0
         else:
@@ -365,6 +368,7 @@ def _run_pointwise(
             losses = torch.nn.functional.binary_cross_entropy_with_logits(
                 logits, labels_tensor, reduction="none"
             )
+            # Weighted NeuMF changes loss weights, not the network architecture.
             loss = (losses * weights_tensor).mean()
             if not torch.isfinite(loss):
                 raise RuntimeError("non-finite pointwise loss")
@@ -386,6 +390,7 @@ def _run_pointwise(
                 "seconds": time.perf_counter() - epoch_started,
             }
         )
+        # Keep the best validation checkpoint, as with BPR.
         if validation["ndcg@10"] > best_ndcg:
             best_ndcg = validation["ndcg@10"]
             best_state = {key: value.detach().cpu().clone() for key, value in model.state_dict().items()}
