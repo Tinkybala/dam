@@ -1,8 +1,7 @@
 """Load the local models, user history, and metadata used by the demo.
 
-The demo deliberately has a small data-access surface.  It reads only the
-frozen inference bundle and curated catalog metadata; it never opens training,
-validation, or test result files.
+Reads the inference bundle and catalogue metadata. Training, validation and
+test result files are not used by the demo.
 """
 
 from __future__ import annotations

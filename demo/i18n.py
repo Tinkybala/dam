@@ -1,4 +1,4 @@
-"""Small, explicit translation table for the bilingual demo UI."""
+"""English and Chinese strings for the demo UI."""
 
 from __future__ import annotations
 

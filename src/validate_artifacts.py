@@ -1,7 +1,7 @@
 """Check saved splits for leakage and incorrect evaluation candidates.
 
-This optional check reads prepared data without training models or scoring test
-predictions. It checks the experiment's assumptions rather than file hashes.
+Checks split overlap and candidate labels in prepared data. It does not
+train models, score predictions or verify file hashes.
 """
 
 from __future__ import annotations

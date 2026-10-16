@@ -6,9 +6,8 @@ import numpy as np
 import pandas as pd
 
 
-# Each mode fixes the profile weighting and whether to divide by neighbour support.
-# Exposing those two dials separately would allow binary weights with normalisation,
-# which is identically 1.0 for every candidate.
+# Binary profiles use a sum: normalizing by neighbour support would give
+# a score of 1 for every supported candidate.
 _SCORE_MODES: dict[str, tuple[str, bool]] = {
     "similarity_sum": ("binary", False),
     "rating_mean": ("rating", True),
@@ -18,10 +17,8 @@ _SCORE_MODES: dict[str, tuple[str, bool]] = {
 class ItemItemKNN:
     """Rank items by cosine similarity to the user's training positives.
 
-    Each item is represented by the column of users holding it as a training
-    positive. The frozen data contract already restricts those to the dataset's
-    positive threshold, so the similarity is identical in definition to the
-    down-sampled prototype's while covering the full warm population.
+    Each item has a binary vector of users who rated it positively in training.
+    Similarities use all training users in the warm population.
     """
 
     def __init__(
@@ -222,7 +219,7 @@ class ItemItemKNN:
         for start in range(0, item_count, 1024):
             chunk = gram[start : start + 1024]
             chunk /= np.outer(norms[start : start + 1024], norms)
-        # Equivalent to the prototype's per-prediction self-exclusion, done once.
+        # Exclude self-similarity when building the neighbour matrix.
         np.fill_diagonal(gram, 0.0)
         if self.top_k is not None and self.top_k < item_count:
             self._truncate(gram)

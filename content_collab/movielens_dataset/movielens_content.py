@@ -1,8 +1,7 @@
 """Shared MovieLens 1M content-recommendation utilities.
 
-The functions in this module intentionally reuse the repository's preparation
-and evaluation primitives so content results are directly comparable with the
-model-based MovieLens workstream.
+Uses the shared preparation and evaluation functions to match the
+model-based MovieLens split, candidates and metrics.
 """
 
 from __future__ import annotations

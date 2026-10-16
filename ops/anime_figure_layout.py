@@ -1,4 +1,4 @@
-"""Report-sized layouts for the archived Anime analysis (no data mutation)."""
+"""Layouts for the Anime model, component and parameter figures."""
 
 import statistics
 

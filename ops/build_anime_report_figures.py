@@ -1,4 +1,4 @@
-"""Build report figures from archived, sanitized Anime metrics; never train models."""
+"""Plot the archived Anime model and parameter results."""
 
 from __future__ import annotations
 
@@ -53,7 +53,7 @@ def summarize(data):
 
 
 def paired_differences(data, model, baseline, metric="test_ndcg@10"):
-    """Pair fixed training seeds; never subtract unrelated row positions."""
+    """Compute model-minus-baseline differences for matching training seeds."""
     models = data["final"]["models"]
     for name in (model, baseline):
         seeds = [r["seed"] for r in models[name]["per_seed"]]

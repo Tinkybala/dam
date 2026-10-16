@@ -1,7 +1,7 @@
 # Experiment records
 
-This file records repository-facing experiment checkpoints. Generated datasets,
-predictions, checkpoints, and raw result directories remain outside Git.
+This log records the experiments and later code/documentation changes.
+Generated datasets, predictions, checkpoints and raw results remain outside Git.
 
 ## 2026-10-15 — Simplify coursework code for review
 
@@ -134,11 +134,10 @@ new model-selection stage.
 The server used PyArrow 17.0.0 and the local verification environment used
 PyArrow 25.0.1. Parquet byte hashes therefore differed. The local verification
 record reports matching canonical logical-content signatures, row counts,
-schemas, and fixed-position samples for all nine prepared artifacts. Reports
-must distinguish physical serialization identity from logical-content
-equivalence.
+schemas, and fixed-position samples for all nine prepared artifacts. The files
+therefore differ in serialization while containing the same data.
 
-### Interpretation boundary
+### Evaluation scope
 
 The sampled metrics rank one held-out positive among 100 candidates. They must
 not be presented as full-catalog performance, catalog coverage, or final test

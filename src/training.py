@@ -105,9 +105,8 @@ def iter_bpr_batches_torch(
 ) -> Iterator[tuple[torch.Tensor, torch.Tensor, torch.Tensor]]:
     """Yield BPR triples with shuffling and rejection sampling on ``device``.
 
-    This keeps the same uniform-unseen-negative protocol as
-    :func:`iter_bpr_batches`, while avoiding a NumPy round-trip for CUDA
-    training. Torch's seeded RNG is used for the device-side draws.
+    Like :func:`iter_bpr_batches`, samples uniformly from unseen items.
+    Sampling and shuffling use Torch's seeded RNG on the target device.
     """
     if len(users) != len(positive_items):
         raise ValueError("users and positive_items must have the same length")
@@ -152,7 +151,7 @@ def iter_pointwise_batches(
     negatives_per_positive: int,
     rng: np.random.Generator,
 ) -> Iterator[tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]]:
-    """Yield positives and rejected unseen negatives under one shared protocol."""
+    """Yield shuffled pointwise batches of positives and sampled unseen items."""
     if not (len(users) == len(positive_items) == len(positive_weights)):
         raise ValueError("pointwise input arrays must have the same length")
     if min(item_count, positive_batch_size, negatives_per_positive) < 1:
@@ -282,7 +281,7 @@ def normalized_confidence_weights(
         maximum_rating - positive_threshold
     )
     weights = 1.0 + alpha * strength
-    # Normalization changes relative confidence without increasing mean loss scale.
+    # Keep the mean positive weight at one.
     weights /= weights.mean()
     return weights.astype(np.float32)
 
