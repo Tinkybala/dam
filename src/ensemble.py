@@ -12,14 +12,8 @@ import pandas as pd
 from .evaluate import aggregate_metrics
 
 
-REQUIRED_COLUMNS = {"user_id", "item_id", "label", "score"}
-
-
 def _read_predictions(path: Path) -> pd.DataFrame:
     frame = pd.read_parquet(path)
-    missing = REQUIRED_COLUMNS.difference(frame.columns)
-    if missing:
-        raise ValueError(f"{path}: missing required columns: {sorted(missing)}")
     if frame.duplicated(["user_id", "item_id"]).any():
         raise ValueError(f"{path}: duplicate user-item pairs")
     if not np.isfinite(frame["score"].to_numpy(dtype=float)).all():
@@ -57,9 +51,6 @@ def percentile_ranks(predictions: pd.DataFrame) -> pd.DataFrame:
     single-item user).
     """
 
-    missing = REQUIRED_COLUMNS.difference(predictions.columns)
-    if missing:
-        raise ValueError(f"missing required columns: {sorted(missing)}")
     ranked = predictions.sort_values(
         ["user_id", "score", "item_id"],
         ascending=[True, False, True],
@@ -68,6 +59,7 @@ def percentile_ranks(predictions: pd.DataFrame) -> pd.DataFrame:
     counts = ranked.groupby("user_id", sort=False)["item_id"].transform("size").astype(float)
     ranks = ranked.groupby("user_id", sort=False).cumcount().to_numpy(dtype=float) + 1.0
     denominators = counts.to_numpy() - 1.0
+    # Convert each user's ranking to [0, 1] because model score scales differ.
     ranked["percentile"] = np.where(
         denominators == 0.0, 1.0, (counts.to_numpy() - ranks) / denominators
     )
@@ -81,6 +73,7 @@ def blend_predictions(
 
     if not 0.0 <= weight <= 1.0:
         raise ValueError("weight must be between 0 and 1")
+    # Blending requires exactly the same users, candidates and positive labels.
     validate_prediction_consistency(bpr, neural)
     bpr_ranks = percentile_ranks(bpr).rename(columns={"percentile": "bpr_percentile"})
     neural_ranks = percentile_ranks(neural).rename(
@@ -107,7 +100,6 @@ def evaluate_weights(
 
     bpr = _read_predictions(bpr_path)
     neural = _read_predictions(neural_path)
-    validate_prediction_consistency(bpr, neural)
     results: list[dict[str, float | int]] = []
     for weight in weights:
         blended = blend_predictions(bpr, neural, weight)

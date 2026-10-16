@@ -3,6 +3,20 @@
 This file records repository-facing experiment checkpoints. Generated datasets,
 predictions, checkpoints, and raw result directories remain outside Git.
 
+## 2026-10-15 — Simplify coursework code for review
+
+Removed file hashing from preparation and demo loading, reduced repeated
+schema/metadata checks, and added English explanations of splitting, negative
+sampling, model branches, confidence weighting, checkpoint selection and ranking.
+The README now gives a reading order and basic run instructions. Checks for
+data leakage, candidate alignment and evaluation assumptions remain.
+
+Validation: 60 tests pass. On a small synthetic MovieLens-format dataset with
+seed 42 and two CPU epochs, all six models produced exactly the same prepared
+tables, saved model tensors, predictions and ranking metrics before and after
+the cleanup; the fixed ensemble also matched. Existing experiment data, final
+configurations and archived formal results were not modified.
+
 ## 2026-09-28 — Locked MovieLens 1M transfer completed
 
 Candidate-lock commit `c5f903579c81d9a58e051714c27e2a9483946ca9` and

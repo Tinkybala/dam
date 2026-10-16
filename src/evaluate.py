@@ -8,10 +8,6 @@ import pandas as pd
 
 def rank_candidates(predictions: pd.DataFrame) -> pd.DataFrame:
     """Rank by descending score and ascending item ID for exact ties."""
-    required = {"user_id", "item_id", "label", "score"}
-    missing = required.difference(predictions.columns)
-    if missing:
-        raise ValueError(f"missing required columns: {sorted(missing)}")
     if predictions.duplicated(["user_id", "item_id"]).any():
         raise ValueError("predictions contain duplicate user-item pairs")
 
@@ -34,6 +30,7 @@ def per_user_metrics(predictions: pd.DataFrame, k: int = 10) -> pd.DataFrame:
         raise ValueError("each user must have exactly one positive candidate")
 
     positives = ranked.loc[ranked["label"].eq(1), ["user_id", "rank"]].copy()
+    # With one relevant item, ideal DCG is 1: NDCG is its discounted rank or zero.
     positives[f"hit_rate@{k}"] = positives["rank"].le(k).astype(float)
     positives[f"ndcg@{k}"] = np.where(
         positives["rank"].le(k), 1.0 / np.log2(positives["rank"] + 1), 0.0
