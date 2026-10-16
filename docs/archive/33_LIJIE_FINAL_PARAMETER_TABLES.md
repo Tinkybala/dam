@@ -95,11 +95,10 @@ the epoch cap does not necessarily use its final epoch for inference.
 This is the archived server environment, not the current local Python runtime.
 CUDA build and driver compatibility version are distinct fields.
 
-## Traceability and report placement
+## Source records
 
-Use the architecture and training tables in Methods/Experiments. The per-seed
-checkpoint and environment tables can be placed in an appendix if space is
-limited. Keep standalone BPR and the fusion component as separate rows.
+Standalone BPR and the ensemble component have separate configurations, shown
+in the tables above.
 
 The audit JSON records all 19 configuration paths, full values, selected user
 counts, training-positive counts and checkpoint epochs. It also includes the

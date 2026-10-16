@@ -1,9 +1,10 @@
-# Anime recommendation experiment: end-to-end overview
+# Anime model-based experiment overview
 
-This page explains what the completed experiment did, why each stage existed,
-and where information was deliberately prevented from flowing backward.
+This records the preparation, model selection and final evaluation of the
+Anime model-based methods. The four-method comparison is in the current
+[result summary](../RESULTS.md).
 
-## The whole chain at a glance
+## Experiment sequence
 
 ```mermaid
 flowchart LR
@@ -24,25 +25,24 @@ flowchart LR
     K -. no feedback into model or weight selection .-> G
 ```
 
-The critical idea is simple: **validation chooses; test reports**. The test set
-stayed sealed throughout model and hyperparameter decisions. It was opened once
-after the candidates, seeds, ensemble formula, and weight were frozen.
+Validation selected the models and hyperparameters. Test scoring was enabled
+after the candidates, training seeds, ensemble formula and weight were fixed.
 
-## What each stage answered
+## Recorded stages
 
-| Stage | Question answered | Main evidence or gate |
+| Stage | Purpose | Recorded checks |
 |---|---|---|
-| Data preparation | Are all models solving exactly the same recommendation problem? | Stable manifest; 60,384 users, 7,223 items, fixed split and candidates |
-| Baseline preflight | Can every model complete correctly and is the server adequate? | Validation-only metrics, finite loss, clean logs |
-| Validation tuning | Which settings should be promoted without seeing test? | Shared 10,000-user development subset; fixed budgets and seeds |
-| Candidate lock | What exactly will be evaluated in the final campaign? | BPR, Weighted NeuMF, other comparison models, three seeds, fixed `w=0.7` |
-| Full-user preflight | Will the locked candidates work at final scale and actually use CUDA? | 60,384 users, one epoch, two RTX A6000 devices, GPU attach proof |
-| Test unseal | Can the final run read test without changing anything else? | 19 configs changed only from `evaluate_test: false` to `true` |
-| Formal Stage F | Did every declared run finish under the frozen protocol? | 19/19 schema gates, 18/18 GPU gates, no retry or timeout |
-| Ensemble Stage G-H | Does the pre-declared blend improve the components? | Six derived artifacts and one validated final summary |
-| Archive Stage I | Can another person audit what happened later? | Commit IDs, SHA-256 values, reports, metadata archive, credential cleanup |
+| Data preparation | Fix users, items, splits and candidates | Stable manifest; 60,384 users, 7,223 items, fixed split and candidates |
+| Baseline preflight | Check model execution and server resources | Validation-only metrics, finite loss, clean logs |
+| Validation tuning | Select settings on validation | Shared 10,000-user development subset; fixed budgets and seeds |
+| Candidate lock | Fix the final configurations | BPR, Weighted NeuMF, other comparison models, three seeds, fixed `w=0.7` |
+| Full-user preflight | Check execution at full scale on CUDA | 60,384 users, one epoch, two RTX A6000 devices, GPU attach proof |
+| Test unseal | Enable test scoring with other settings unchanged | 19 configs changed only from `evaluate_test: false` to `true` |
+| Formal Stage F | Check completion of the declared runs | 19/19 schema gates, 18/18 GPU gates, no retry or timeout |
+| Ensemble Stage G-H | Compute the fixed blend and compare components | Six derived artifacts and one validated final summary |
+| Archive Stage I | Archive source and result records | Commit IDs, SHA-256 values, reports, metadata archive, credential cleanup |
 
-## Data and evaluation contract
+## Data and evaluation
 
 The raw ratings were converted into an implicit-feedback task:
 
@@ -56,11 +56,10 @@ The raw ratings were converted into an implicit-feedback task:
 
 The frozen dataset contains 60,384 eligible users, 7,223 warm items, 5,087,394
 training positives, 60,384 validation positives, and 60,384 test positives.
-These numbers define the experiment's scope: the final scores measure ranking
-within sampled 100-item candidate sets for warm users, not full-catalog or
-online recommendation quality.
+The scores measure ranking within sampled 100-item candidate sets for warm
+users. Full-catalogue and online performance were not evaluated.
 
-## Model-selection funnel
+## Model selection
 
 ```mermaid
 flowchart TD
@@ -80,9 +79,9 @@ scales are different, so the ensemble first converts each model's scores to
 per-user percentile ranks, then combines them with the already selected
 `0.7 / 0.3` weights. No ensemble weight was searched after test unsealing.
 
-## Why there were 19 runs but more result rows
+## Training runs and derived results
 
-The formal campaign contained 19 independently executed configurations:
+The final experiment ran 19 configurations:
 
 - Popular: 1 deterministic run.
 - BPR, GMF, MLP, NeuMF, and Weighted NeuMF: 3 seeds each, for 15 runs.
@@ -92,7 +91,7 @@ That totals `1 + 15 + 3 = 19`. Stage G-H then derived six ensemble files from
 existing predictions: validation and test for each of three seeds. These are
 derived results, not six new training runs.
 
-## Final outcome
+## Test results
 
 | System | Test NDCG@10 | Test HR@10 |
 |---|---:|---:|
@@ -104,12 +103,12 @@ derived results, not six new training runs.
 | MLP | 0.716791 ± 0.000522 | 0.936037 ± 0.000538 |
 | Popular | 0.507031 | 0.771761 |
 
-The locked ensemble was best on both reported metrics and won for all three
-seeds. The small validation-to-test gap supports stability under this fixed
-sampled-candidate protocol. Three seeds still provide descriptive stability,
-not a strong statistical-significance claim.
+The ensemble scored highest on both metrics in each of the three seed runs.
+Validation and test scores were close under this fixed sampled-candidate
+protocol. Three training seeds describe run-to-run variation; they do not
+establish statistical significance.
 
-## What a real recommendation request produces
+## Recommendation output
 
 ```mermaid
 flowchart LR
@@ -130,13 +129,13 @@ serving rules. A brand-new user with no usable history needs a cold-start
 fallback such as popularity or content features; that case is outside this
 collaborative-filtering experiment.
 
-## The five safeguards to remember
+## Experiment records
 
-1. **Same data contract:** all models use the same users, items, split, and candidates.
-2. **No test leakage:** tuning is validation-only; test is opened once after locking.
-3. **Real GPU evidence:** CUDA configuration plus process attachment and device monitoring.
-4. **Reproducible identity:** source commits, manifests, schemas, and SHA-256 records.
-5. **Clean handoff:** no generated bulk artifacts, machine coordinates, or credentials in Git.
+The model-based runs share users, items, splits and candidates. Tuning used
+validation only. CUDA configuration, process attachment and monitoring record
+the GPU use. Source commits, manifests, schema checks and SHA-256 values identify
+the archived inputs and results. Generated data, machine addresses and credentials
+are excluded from Git.
 
 For exact final values and caveats, see
 [`../evidence/final_result_report_2026-09-05.md`](../../evidence/final_result_report_2026-09-05.md).

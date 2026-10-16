@@ -130,7 +130,7 @@ class Recommender:
         return history.sort_values(["name", "anime_id"], kind="mergesort")[columns].head(limit).reset_index(drop=True)
 
     def poster_path(self, anime_id: int) -> Path:
-        """Return a cached poster or the committed offline placeholder."""
+        """Return a cached poster or the local placeholder."""
 
         record = self.poster_index.get(str(int(anime_id)))
         if record is not None:

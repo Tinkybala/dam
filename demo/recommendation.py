@@ -1,4 +1,4 @@
-"""Single-panel recommendation experience."""
+"""Display a user's history and recommendations."""
 
 from __future__ import annotations
 
