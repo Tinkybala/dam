@@ -1,4 +1,4 @@
-# Recommender Systems — SC4020
+# Recommender systems (SC4020)
 
 An undergraduate course project comparing four recommendation approaches on Anime and MovieLens 1M.
 This repository contains the implementations, experiment configurations, recorded results and a Streamlit demo.
@@ -44,7 +44,7 @@ Reported held-out test NDCG@10 for the selected configurations:
 | Item-item, K = 50 | 0.714 | 0.538 |
 | BPR–Weighted NeuMF ensemble | 0.799658 | 0.632039 |
 
-**Comparison scope:** Anime user-user tests cover 10,000 users; content-based and model-based tests cover 60,384.
+Anime user-user tests cover 10,000 users; content-based and model-based tests cover 60,384.
 Matching content-based and model-based splits and candidates were checked; exact agreement across all four methods remains unverified.
 These numbers therefore do not establish a controlled four-method ranking.
 See [full results](docs/RESULTS.md) for HR@10, variability and source records.
