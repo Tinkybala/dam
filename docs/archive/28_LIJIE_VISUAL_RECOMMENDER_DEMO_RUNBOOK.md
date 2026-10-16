@@ -15,7 +15,7 @@ user review, the product scope was deliberately reduced to one panel:
 Poster metadata does not enter model scoring. The sampled-candidate final
 metrics are disclosed as experiment evidence and are not presented as
 full-catalog interface accuracy. Exact implementation evidence is recorded in
-[`../evidence/demo_single_panel_poster_gate_20260905.md`](../evidence/demo_single_panel_poster_gate_20260905.md).
+[`../evidence/demo_single_panel_poster_gate_20260905.md`](../../evidence/demo_single_panel_poster_gate_20260905.md).
 
 ## 1. 目标
 

@@ -152,9 +152,9 @@ def main():
     results.to_csv(OUTPUT / "validation_results.csv", index=False)
 
     best = results.sort_values(
-        ["ndcg", "hr"],
+        ["ndcg@10", "hit_rate@10"],
         ascending=False,
-    ).iloc[0].to_dict() if "ndcg" in results.columns else None
+    ).iloc[0].to_dict()
 
     print("\nValidation results:")
     print(results.to_string(index=False))
