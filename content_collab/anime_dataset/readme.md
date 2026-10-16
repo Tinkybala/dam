@@ -390,4 +390,3 @@ Select the highest-validation-NDCG configuration
 ~~~
 
 The algorithm recommends anime whose engineered content vectors point in a similar direction to the user's rating-weighted preference vector.
-

@@ -70,7 +70,7 @@ def evaluate():
 
     # 3. Train a separate model for each K and calculate ranking metrics.
     results = []
-    
+
     # Prepare the same candidate set for every K.
     # This makes the parameter comparison fair.
     train_items = set(
@@ -112,7 +112,7 @@ def evaluate():
     for k in K_VALUES:
         model = UserUserKNN(k=k)
         model.fit(train)
-        
+
         hits = []
         ndcgs = []
 
