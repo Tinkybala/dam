@@ -48,7 +48,7 @@ Checkpoint embedding dimensions must match the manifest and mappings.
 The original Anime checkpoints use BPR dimension 128 and Weighted NeuMF dimension 64, with hidden layers `[64, 32, 16, 8]`.
 The catalogue metadata is already included at `demo/assets/anime_metadata.parquet`.
 
-With a valid bundle, you can refresh the showcase users and poster cache:
+Once the bundle is in place, refresh the demo users and poster cache:
 
 ```bash
 python -m demo.prepare_showcase --ratings data/rating.csv --bundle demo_bundle --user-count 20

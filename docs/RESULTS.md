@@ -1,7 +1,7 @@
 # Recorded results and comparison scope
 
-These tables summarize the existing held-out test results used in the group report.
-Repository integration does not rerun the full experiments or select new models on test data.
+These are the held-out test results used in the group report.
+Configurations were selected on validation data before test evaluation.
 
 HR@10 counts whether the held-out positive appears in the top ten.
 NDCG@10 also rewards placing that positive higher in the list.
@@ -12,11 +12,11 @@ NDCG@10 also rewards placing that positive higher in the list.
 | --- | --- | ---: | ---: | --- |
 | Anime | Content C4: genre + title | 0.259747 | 0.469114 | 60,384 |
 | Anime | User-user, K = 50 | 0.6849 | 0.8695 | 10,000 development users |
-| Anime | Item-item, K = 50 | 0.714 | 0.927 | Full eligible population; separate workstream |
+| Anime | Item-item, K = 50 | 0.714 | 0.927 | Full eligible population |
 | Anime | Fixed BPR–Weighted NeuMF ensemble | 0.799658 ± 0.000259 | 0.956335 ± 0.000843 | 60,384 |
 | MovieLens 1M | Content M2: genre + decade | 0.149743 | 0.274279 | 6,034 |
 | MovieLens 1M | User-user, K = 50 | 0.5531 | 0.7842 | All eligible MovieLens users |
-| MovieLens 1M | Item-item, K = 50 | 0.538 | 0.783 | Full eligible population; separate workstream |
+| MovieLens 1M | Item-item, K = 50 | 0.538 | 0.783 | Full eligible population |
 | MovieLens 1M | Fixed BPR–Weighted NeuMF ensemble | 0.632039 ± 0.003126 | 0.838692 ± 0.003120 | 6,034 |
 
 Model-based means and sample SDs use training seeds 42, 43 and 44 on one fixed split.
@@ -26,9 +26,9 @@ User-user and item-item values retain their originally reported precision.
 ## How to read the comparison
 
 - Validation NDCG@10 selected C4, M2 and the user-user K; the table above reports separate test scores.
-- Exact archived train/validation/test and candidate agreement was checked between content-based and model-based workstreams.
+- The content-based and model-based experiments use matching archived splits and candidate sets.
 - The Anime user-user experiment evaluates fewer users, while its neighbour pool includes all training users.
-- Exact artifact agreement across all four workstreams has not been established. Neighbourhood comparisons are descriptive.
+- Split and candidate agreement across all four methods has not been checked. Treat neighbourhood comparisons as descriptive.
 - All scores concern sampled candidates. They do not measure full-catalogue, temporal or cold-start accuracy.
 - Different positive thresholds and populations also prevent interpreting raw Anime versus MovieLens scores as dataset difficulty.
 

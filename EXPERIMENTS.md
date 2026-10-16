@@ -113,7 +113,7 @@ not the separate standalone BPR baseline, together with Weighted NeuMF.
 It combines per-user percentile ranks with weights 0.7 and 0.3.
 MovieLens uses the transferred BPR configuration and the same blend.
 `src.ensemble` evaluates validation blends; the original final-test helpers are in `ops/`.
-The final scores in [results](docs/RESULTS.md) are existing measurements, not results from a new tuning run.
+The [result summary](docs/RESULTS.md) records the original full-data runs.
 
 ## Checks
 
