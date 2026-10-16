@@ -1,0 +1,12 @@
+# MovieLens transfer of configs/final/anime_item_item_final.yaml: the neighbourhood size
+# and score mode selected on the Anime development subset are carried over unchanged.
+# Kept out of configs/movielens/, which is the sealed 13-run transfer campaign.
+model: item_item
+artifacts_dir: ../../artifacts/movielens-1m-r4
+output_dir: ../../results/movielens/item-item
+seed: 42
+neighbourhood_size: 50
+score_mode: similarity_sum
+evaluate_test: true
+positive_threshold: 4
+maximum_rating: 5

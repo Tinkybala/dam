@@ -1,0 +1,8 @@
+model: item_item
+artifacts_dir: ../artifacts/anime-r7
+output_dir: ../results/anime-item-item-dev
+seed: 42
+development_users_file: development_users.parquet
+neighbourhood_size: 100
+score_mode: rating_mean
+evaluate_test: false

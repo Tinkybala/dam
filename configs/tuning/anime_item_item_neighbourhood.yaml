@@ -1,0 +1,8 @@
+name: anime-item-item-neighbourhood-and-score-mode
+output_root: ../../results/tuning/anime-item-item-stage-a
+gpus: [0]
+base_configs:
+  - path: ../anime_item_item_dev.yaml
+    grid:
+      neighbourhood_size: [20, 50, 100, 200, 500, null]
+      score_mode: [similarity_sum, rating_mean]

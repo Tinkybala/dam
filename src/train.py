@@ -16,7 +16,7 @@ import torch
 import yaml
 
 from .evaluate import aggregate_metrics
-from .models import BPRMatrixFactorization, GMF, MLP, MostPopular, NeuMF
+from .models import BPRMatrixFactorization, GMF, ItemItemKNN, MLP, MostPopular, NeuMF
 from .training import (
     iter_bpr_batches,
     iter_bpr_batches_torch,
@@ -42,7 +42,15 @@ def parse_args() -> argparse.Namespace:
 def train_from_config(config_path: Path) -> dict[str, object]:
     config_path = config_path.resolve()
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    supported_models = {"popular", "bpr", "gmf", "mlp", "neumf", "weighted_neumf"}
+    supported_models = {
+        "popular",
+        "item_item",
+        "bpr",
+        "gmf",
+        "mlp",
+        "neumf",
+        "weighted_neumf",
+    }
     if config["model"] not in supported_models:
         raise ValueError(f"model must be one of {sorted(supported_models)}")
 
@@ -68,6 +76,10 @@ def train_from_config(config_path: Path) -> dict[str, object]:
     started = time.perf_counter()
     if config["model"] == "popular":
         result = _run_popular(train, validation_candidates, test_candidates, output)
+    elif config["model"] == "item_item":
+        result = _run_item_item(
+            config, train, validation_candidates, test_candidates, output
+        )
     elif config["model"] == "bpr":
         result = _run_bpr(
             config,
@@ -120,6 +132,46 @@ def _run_popular(
         test_predictions.to_parquet(output / "test_predictions.parquet", index=False)
         result["test"] = aggregate_metrics(test_predictions, k=10)
     return result
+
+
+def _run_item_item(
+    config: dict[str, object],
+    train: pd.DataFrame,
+    validation_candidates: pd.DataFrame,
+    test_candidates: pd.DataFrame | None,
+    output: Path,
+) -> dict[str, object]:
+    neighbourhood_size = config.get("neighbourhood_size", 100)
+    model = ItemItemKNN(
+        top_k=None if neighbourhood_size is None else int(neighbourhood_size),
+        score_mode=str(config.get("score_mode", "rating_mean")),
+        similarity_block=int(config.get("similarity_block", 8192)),
+    ).fit(train)
+
+    validation_predictions = validation_candidates.copy()
+    validation_predictions["score"] = model.predict(
+        validation_predictions["user_id"], validation_predictions["item_id"]
+    )
+    validation_predictions.to_parquet(output / "validation_predictions.parquet", index=False)
+    result: dict[str, object] = {
+        "validation": aggregate_metrics(validation_predictions, k=10),
+        "validation_zero_score_rate": _zero_score_rate(validation_predictions),
+        **model.fit_summary(),
+    }
+    if test_candidates is not None:
+        test_predictions = test_candidates.copy()
+        test_predictions["score"] = model.predict(
+            test_predictions["user_id"], test_predictions["item_id"]
+        )
+        test_predictions.to_parquet(output / "test_predictions.parquet", index=False)
+        result["test"] = aggregate_metrics(test_predictions, k=10)
+        result["test_zero_score_rate"] = _zero_score_rate(test_predictions)
+    return result
+
+
+def _zero_score_rate(predictions: pd.DataFrame) -> float:
+    """Share of candidates no neighbour supported, which rank on item ID alone."""
+    return float(predictions["score"].eq(0.0).mean())
 
 
 def _run_bpr(
