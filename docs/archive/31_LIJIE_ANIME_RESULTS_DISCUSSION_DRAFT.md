@@ -1,8 +1,7 @@
 # Anime results and discussion draft
 
-## Material Passport
+## Record details
 
-- Origin Skill: academic-research-suite / academic-paper
 - Scope: results interpretation from the existing frozen Anime experiment
 - Version: v1, 2026-09-26
 - Status: source-grounded draft for team editing; not a completed group report

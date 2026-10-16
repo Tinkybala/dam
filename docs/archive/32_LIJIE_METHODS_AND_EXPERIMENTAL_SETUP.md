@@ -1,8 +1,7 @@
 # Methods and experimental setup: Anime recommendation
 
-## Material Passport
+## Record details
 
-- Origin Skill: academic-research-suite / academic-paper
 - Scope: model-based workstream, Methods and experimental setup draft
 - Version: v1, 2026-09-26
 - Status: implementation and parameters checked against the final-run source and

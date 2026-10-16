@@ -1,12 +1,11 @@
 # Anime report figures and interpretation — 2026-09-26
 
-## Material Passport
+## Record details
 
-- Origin Skill: academic-research-suite / experiment-agent
-- Origin Mode: archived-result analysis and visualization
-- Verification Status: final aggregates cross-checked against 19 archived run
+- Activity: archived-result analysis and visualization
+- Status: final aggregates cross-checked against 19 archived run
   metrics; alpha scan checked against local summary and historical configuration
-- Version Label: anime_report_figures_v2
+- Version: anime_report_figures_v2
 - Owner: Lijie model-based recommender workstream
 
 ## Deliverables and reproduction

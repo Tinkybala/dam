@@ -1,6 +1,6 @@
 # Anime one-shot optimization campaign — Phase F results
 
-## Material Passport
+## Record details
 
 - ID: `anime-oneshot-phase-f-2026-09-03`
 - Type: validation-only code experiment result and reproducibility record

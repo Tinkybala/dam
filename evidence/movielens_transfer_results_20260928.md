@@ -1,13 +1,12 @@
 # MovieLens 1M locked transfer results — 2026-09-28
 
-## Material Passport
+## Record details
 
-- Origin Skill: academic-research-suite / experiment-agent
-- Origin Mode: frozen GPU run and reproducibility validation
-- Verification Status: ARCHIVED_VERIFIED for the 13 model runs, 3 fixed ensembles,
+- Activity: frozen GPU run and reproducibility validation
+- Status: ARCHIVED_VERIFIED for the 13 model runs, 3 fixed ensembles,
   and the local metadata archive; inference beyond this protocol is qualified
 - Owner: Lijie model-based recommender workstream
-- Version Label: movielens_transfer_final_v1
+- Version: movielens_transfer_final_v1
 
 ## Locked execution and provenance
 

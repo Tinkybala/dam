@@ -1,12 +1,11 @@
 # MovieLens local preparation — 2026-09-26
 
-## Material Passport
+## Record details
 
-- Origin Skill: academic-research-suite / experiment-agent
-- Origin Mode: run (local ETL and verification only)
-- Verification Status: VERIFIED for local preparation; GPU execution NOT RUN
+- Activity: run (local ETL and verification only)
+- Status: VERIFIED for local preparation; GPU execution NOT RUN
 - Owner: Lijie model-based recommender workstream
-- Version Label: movielens_local_preparation_v1
+- Version: movielens_local_preparation_v1
 
 ## Completed
 

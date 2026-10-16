@@ -1,6 +1,6 @@
 # Candidate lock full-user preflight — results
 
-## Material Passport
+## Record details
 
 - ID: `anime-candidate-lock-full-user-preflight-2026-09-03`
 - Type: validation-only code experiment result and reproducibility record
