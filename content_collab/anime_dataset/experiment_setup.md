@@ -333,4 +333,3 @@ After preparation, the content-based system receives:
 | Anime metadata | Construct content vectors |
 
 At this boundary, no recommendation scores have been calculated yet.
-
