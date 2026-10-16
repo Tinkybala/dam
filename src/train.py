@@ -1,4 +1,4 @@
-"""Train and evaluate the configured recommendation models."""
+"""Train one model, select its best validation checkpoint, then optionally test it."""
 
 from __future__ import annotations
 
@@ -58,6 +58,7 @@ def train_from_config(config_path: Path) -> dict[str, object]:
     validation_candidates = _load_candidates(
         artifacts / "validation_candidates.parquet", selected_users
     )
+    # Tuning uses validation only; test scoring is enabled explicitly for final runs.
     test_candidates = (
         _load_candidates(artifacts / "test_candidates.parquet", selected_users)
         if bool(config.get("evaluate_test", False))
@@ -321,6 +322,7 @@ def _fit_and_evaluate(
                 losses = torch.nn.functional.binary_cross_entropy_with_logits(
                     logits, batch[2], reduction="none"
                 )
+                # Weighted NeuMF changes loss weights, not the network architecture.
                 loss = (losses * batch[3]).mean()
             if not torch.isfinite(loss):
                 raise RuntimeError(f"non-finite {mode} loss")
@@ -342,6 +344,7 @@ def _fit_and_evaluate(
             "validation_hit_rate@10": validation["hit_rate@10"],
             "seconds": time.perf_counter() - epoch_started,
         })
+        # Select checkpoints on validation only; clone tensors before the next update.
         if validation["ndcg@10"] > best_ndcg:
             best_ndcg = validation["ndcg@10"]
             best_state = {

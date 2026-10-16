@@ -33,14 +33,14 @@
     }
   },
   "files": {
-    "bpr_seed42_model.pt": {"bytes": 0, "sha256": "<sha256>"},
-    "weighted_neumf_seed42_model.pt": {"bytes": 0, "sha256": "<sha256>"},
-    "user_mapping.parquet": {"bytes": 0, "sha256": "<sha256>"},
-    "item_mapping.parquet": {"bytes": 0, "sha256": "<sha256>"},
-    "observed_by_user.parquet": {"bytes": 0, "sha256": "<sha256>"},
-    "demo_users.parquet": {"bytes": 0, "sha256": "<sha256>"},
-    "demo/assets/anime_metadata.parquet": {"bytes": 0, "sha256": "<sha256>"},
-    "poster_index.json": {"bytes": 0, "sha256": "<sha256>"},
-    "posters/<anime_id>.<extension>": {"bytes": 0, "sha256": "<sha256>"}
+    "bpr_seed42_model.pt": {"bytes": 0},
+    "weighted_neumf_seed42_model.pt": {"bytes": 0},
+    "user_mapping.parquet": {"bytes": 0},
+    "item_mapping.parquet": {"bytes": 0},
+    "observed_by_user.parquet": {"bytes": 0},
+    "demo_users.parquet": {"bytes": 0},
+    "demo/assets/anime_metadata.parquet": {"bytes": 0},
+    "poster_index.json": {"bytes": 0},
+    "posters/<anime_id>.<extension>": {"bytes": 0}
   }
 }

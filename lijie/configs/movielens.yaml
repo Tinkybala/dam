@@ -1,0 +1,60 @@
+# Report settings. Choose a model and seed with the training command.
+defaults:
+  seed: 42
+  device: cuda
+  gpu_sampling: true
+  eval_batch_size: 65536
+  early_stopping_patience: 5
+  evaluate_test: true
+  positive_threshold: 4
+  maximum_rating: 5
+  artifacts_dir: ../artifacts/movielens-1m-r4
+  output_dir: ../results/movielens/{model}-seed-{seed}
+models:
+  bpr:
+    model: bpr
+    embedding_dim: 128
+    learning_rate: 0.00075
+    l2: 0.0
+    batch_size: 4096
+    negatives_per_positive: 24
+    epochs: 30
+  gmf:
+    model: gmf
+    embedding_dim: 16
+    learning_rate: 0.001
+    l2: 1.0e-06
+    positive_batch_size: 2048
+    negatives_per_positive: 8
+    epochs: 20
+  neumf:
+    model: neumf
+    embedding_dim: 32
+    hidden_layers:
+    - 64
+    - 32
+    - 16
+    - 8
+    dropout: 0.0
+    learning_rate: 0.001
+    l2: 0.0
+    positive_batch_size: 2048
+    negatives_per_positive: 8
+    epochs: 30
+  popular:
+    model: popular
+  weighted_neumf:
+    model: weighted_neumf
+    confidence_alpha: 0.5
+    embedding_dim: 64
+    hidden_layers:
+    - 64
+    - 32
+    - 16
+    - 8
+    dropout: 0.0
+    learning_rate: 0.002
+    l2: 0.0
+    positive_batch_size: 2048
+    negatives_per_positive: 24
+    epochs: 30

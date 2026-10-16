@@ -1,4 +1,4 @@
-"""Validated access to the local demo bundle.
+"""Load the local models, user history, and metadata used by the demo.
 
 The demo deliberately has a small data-access surface.  It reads only the
 frozen inference bundle and curated catalog metadata; it never opens training,
@@ -7,9 +7,7 @@ validation, or test result files.
 
 from __future__ import annotations
 
-import hashlib
 import json
-import re
 from pathlib import Path
 from typing import Any
 
@@ -28,15 +26,6 @@ REQUIRED_BUNDLE_FILES = (
     "observed_by_user.parquet",
     "demo_users.parquet",
 )
-_COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _manifest_path(project_root: Path, bundle_dir: Path, relative: str) -> Path:
@@ -53,7 +42,7 @@ def _manifest_path(project_root: Path, bundle_dir: Path, relative: str) -> Path:
 
 
 def load_and_validate_manifest(bundle_dir: Path) -> dict[str, Any]:
-    """Load the manifest and verify every declared file hash and size."""
+    """Read bundle settings and check that the required files are available."""
 
     bundle_dir = bundle_dir.expanduser().resolve()
     manifest_path = bundle_dir / "manifest.json"
@@ -64,30 +53,12 @@ def load_and_validate_manifest(bundle_dir: Path) -> dict[str, Any]:
     except (OSError, json.JSONDecodeError) as exc:
         raise BundleError(f"invalid demo manifest: {manifest_path}") from exc
 
-    if manifest.get("schema_version") != 1:
-        raise BundleError("unsupported demo manifest schema")
-    source_commit = manifest.get("source_commit")
-    if not isinstance(source_commit, str) or not _COMMIT_RE.fullmatch(source_commit):
-        raise BundleError("manifest source_commit must be a 40-character hash")
-
-    files = manifest.get("files")
-    if not isinstance(files, dict):
-        raise BundleError("manifest files must be an object")
+    files = manifest["files"]
     project_root = bundle_dir.parent
-    for relative, record in files.items():
-        if not isinstance(relative, str) or not isinstance(record, dict):
-            raise BundleError("manifest file records are malformed")
+    for relative in files:
         path = _manifest_path(project_root, bundle_dir, relative)
         if not path.is_file():
             raise BundleError(f"manifest file is missing: {relative}")
-        expected_size = record.get("bytes")
-        expected_hash = record.get("sha256")
-        if not isinstance(expected_size, int) or not isinstance(expected_hash, str):
-            raise BundleError(f"manifest record is incomplete: {relative}")
-        if path.stat().st_size != expected_size:
-            raise BundleError(f"size mismatch for {relative}")
-        if _sha256(path) != expected_hash.lower():
-            raise BundleError(f"SHA-256 mismatch for {relative}")
 
     missing = [name for name in REQUIRED_BUNDLE_FILES if name not in files]
     if missing:
@@ -98,10 +69,7 @@ def load_and_validate_manifest(bundle_dir: Path) -> dict[str, Any]:
 def _read_table(path: Path, required: set[str], label: str) -> pd.DataFrame:
     if not path.is_file():
         raise BundleError(f"missing {label}: {path}")
-    try:
-        frame = pd.read_parquet(path)
-    except Exception as exc:  # pragma: no cover - backend-specific exception
-        raise BundleError(f"cannot read {label}: {path}") from exc
+    frame = pd.read_parquet(path)
     missing = required.difference(frame.columns)
     if missing:
         raise BundleError(f"{label} missing columns: {sorted(missing)}")

@@ -12,10 +12,6 @@ class MostPopular:
         self.item_scores: pd.Series | None = None
 
     def fit(self, train_positives: pd.DataFrame) -> "MostPopular":
-        required = {"user_id", "anime_id"}
-        missing = required.difference(train_positives.columns)
-        if missing:
-            raise ValueError(f"missing required columns: {sorted(missing)}")
         self.item_scores = train_positives.groupby("anime_id")["user_id"].nunique()
         return self
 

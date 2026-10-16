@@ -53,6 +53,7 @@ def observed_pair_codes(
     item_mapping: pd.Series,
     item_count: int,
 ) -> np.ndarray:
+    # A pair has one integer code; sorted unique codes make membership checks cheap.
     users, items = map_interactions(observed, user_mapping, item_mapping)
     return np.unique(users * np.int64(item_count) + items)
 
@@ -82,6 +83,7 @@ def iter_bpr_batches(
             invalid = _codes_present(
                 observed_codes, batch_users * np.int64(item_count) + negatives
             )
+            # Redraw observed items until every negative is unseen by this user.
             while invalid.any():
                 negatives[invalid] = rng.integers(
                     0, item_count, size=int(invalid.sum()), dtype=np.int64
@@ -175,6 +177,7 @@ def iter_pointwise_batches(
                 observed_codes, negative_users * np.int64(item_count) + negatives
             )
 
+        # Positive examples use confidence weights; sampled negatives keep weight 1.
         batch_users = np.concatenate([positive_users, negative_users])
         batch_items = np.concatenate([batch_positive_items, negatives])
         labels = np.concatenate(
@@ -264,6 +267,11 @@ def normalized_confidence_weights(
     maximum_rating: int,
     alpha: float,
 ) -> np.ndarray:
+    """Give higher ratings more weight, keeping the mean positive weight at one.
+
+    For Anime the rating strength is (rating - 7) / 3; MovieLens uses
+    (rating - 4) / 1. With alpha=0 this is ordinary unweighted NeuMF.
+    """
     if alpha < 0:
         raise ValueError("alpha must be non-negative")
     if maximum_rating <= positive_threshold:
@@ -274,6 +282,7 @@ def normalized_confidence_weights(
         maximum_rating - positive_threshold
     )
     weights = 1.0 + alpha * strength
+    # Normalization changes relative confidence without increasing mean loss scale.
     weights /= weights.mean()
     return weights.astype(np.float32)
 
@@ -293,7 +302,7 @@ def _torch_codes_present(sorted_codes: torch.Tensor, queries: torch.Tensor) -> t
         return torch.zeros_like(queries, dtype=torch.bool)
     positions = torch.searchsorted(sorted_codes, queries)
     valid_positions = positions < len(sorted_codes)
-    safe_positions = positions.clamp(max=max(len(sorted_codes) - 1, 0))
+    safe_positions = positions.clamp(max=len(sorted_codes) - 1)
     present = valid_positions & sorted_codes.index_select(0, safe_positions).eq(queries)
     return present
 

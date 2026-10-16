@@ -20,8 +20,8 @@ DAM_DEMO_BUNDLE=/path/to/demo_bundle streamlit run demo/app.py
 ```
 
 真实 bundle 被 `.gitignore` 排除，不能提交 checkpoint、用户交互或密钥。启动时
-会先逐文件核对 manifest SHA-256；缺失或篡改会 fail-fast。Demo 不读取训练、验证
-或 test prediction 文件，也不连接服务器。
+只检查需要的文件和映射是否可用，不做逐文件哈希或文件大小校验。Demo 不读取
+训练、验证或 test prediction 文件，也不连接服务器。
 
 `manifest.example.json` 仅是结构模板；真实 manifest 随本地 bundle 一起生成，
 不会提交到仓库。
