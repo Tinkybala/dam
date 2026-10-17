@@ -9,9 +9,10 @@ from torch import nn
 
 
 class GMF(nn.Module):
+    """Learn a score from elementwise user/item embedding interactions."""
+
     def __init__(self, user_count: int, item_count: int, embedding_dim: int) -> None:
         super().__init__()
-        _validate_dimensions(user_count, item_count, embedding_dim)
         self.user_embedding = nn.Embedding(user_count, embedding_dim)
         self.item_embedding = nn.Embedding(item_count, embedding_dim)
         self.output = nn.Linear(embedding_dim, 1)
@@ -29,6 +30,8 @@ class GMF(nn.Module):
 
 
 class MLP(nn.Module):
+    """Concatenate user/item embeddings and pass them through a neural network."""
+
     def __init__(
         self,
         user_count: int,
@@ -38,7 +41,6 @@ class MLP(nn.Module):
         dropout: float = 0.0,
     ) -> None:
         super().__init__()
-        _validate_dimensions(user_count, item_count, embedding_dim)
         self.user_embedding = nn.Embedding(user_count, embedding_dim)
         self.item_embedding = nn.Embedding(item_count, embedding_dim)
         self.layers, final_width = _mlp_layers(
@@ -65,6 +67,8 @@ class MLP(nn.Module):
 
 
 class NeuMF(nn.Module):
+    """Combine GMF and MLP features, using separate embeddings for each branch."""
+
     def __init__(
         self,
         user_count: int,
@@ -74,7 +78,6 @@ class NeuMF(nn.Module):
         dropout: float = 0.0,
     ) -> None:
         super().__init__()
-        _validate_dimensions(user_count, item_count, embedding_dim)
         self.gmf_user_embedding = nn.Embedding(user_count, embedding_dim)
         self.gmf_item_embedding = nn.Embedding(item_count, embedding_dim)
         self.mlp_user_embedding = nn.Embedding(user_count, embedding_dim)
@@ -114,8 +117,6 @@ def _mlp_layers(
 ) -> tuple[nn.Sequential, int]:
     if not hidden_layers or min(hidden_layers) < 1:
         raise ValueError("hidden_layers must contain positive widths")
-    if not 0.0 <= dropout < 1.0:
-        raise ValueError("dropout must be in [0, 1)")
     modules: list[nn.Module] = []
     width = input_width
     for next_width in hidden_layers:
@@ -124,9 +125,4 @@ def _mlp_layers(
             modules.append(nn.Dropout(dropout))
         width = next_width
     return nn.Sequential(*modules), width
-
-
-def _validate_dimensions(user_count: int, item_count: int, embedding_dim: int) -> None:
-    if min(user_count, item_count, embedding_dim) < 1:
-        raise ValueError("user_count, item_count, and embedding_dim must be positive")
 

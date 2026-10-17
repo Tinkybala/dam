@@ -1,0 +1,8 @@
+# Deterministic model: one run, no seed replicates, matching anime_popular_final.yaml.
+model: item_item
+artifacts_dir: ../../artifacts/anime-r7
+output_dir: ../../results/final/anime-item-item
+seed: 42
+neighbourhood_size: 50
+score_mode: similarity_sum
+evaluate_test: true
