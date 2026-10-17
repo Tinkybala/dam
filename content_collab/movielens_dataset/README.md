@@ -101,4 +101,4 @@ UMAP is optional. The visualization notebook uses Truncated SVD when UMAP is una
 - The 99 distractors are unobserved, not verified dislikes.
 - Ratings 1 to 3 prevent sampled leakage but do not directly shape the positive user profile.
 - Sampled ranking is easier than ranking the full movie catalogue.
-- Metadata is intentionally restricted to the official MovieLens 1M movie table.
+- Metadata comes from the official MovieLens 1M movie table.

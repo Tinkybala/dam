@@ -346,7 +346,7 @@ def _fit_and_evaluate(
     output: Path,
     gpu_sampling: bool,
 ) -> dict[str, object]:
-    """Share checkpoint selection and output handling across trainable models."""
+    """Train with validation-based early stopping, then save predictions and metrics."""
     epochs = int(config.get("epochs", 5))
     patience = int(config.get("early_stopping_patience", 3))
     eval_batch_size = int(config.get("eval_batch_size", 65536))

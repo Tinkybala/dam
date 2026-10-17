@@ -331,7 +331,7 @@ Anime 33242, IS: Infinite Stratos 2 - Infinite Wedding, has no genre but remains
 | C3 | Type and episode bucket remain available |
 | C4 | Title remains available |
 
-The item is never removed from validation or test candidates.
+The item remains in both validation and test candidates.
 
 ## Algorithm summary
 

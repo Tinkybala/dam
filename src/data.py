@@ -1,4 +1,4 @@
-"""Data preparation for leakage-free implicit-feedback experiments."""
+"""Data preparation and candidate sampling for implicit-feedback experiments."""
 
 from __future__ import annotations
 
@@ -70,8 +70,8 @@ def load_movielens_ratings(path: str | Path) -> pd.DataFrame:
 def remove_ambiguous_pairs(ratings: pd.DataFrame) -> tuple[pd.DataFrame, int]:
     """Remove all rows belonging to a duplicated user-item pair.
 
-    Keeping neither version avoids inventing a preference when duplicate rows
-    disagree. The returned count is the number of distinct ambiguous pairs.
+    Identical duplicate ratings are removed too. Return the filtered data and
+    the number of distinct ambiguous pairs.
     """
     duplicate_rows = ratings.duplicated(["user_id", "anime_id"], keep=False)
     ambiguous_pairs = int(
@@ -85,7 +85,7 @@ def remove_ambiguous_pairs(ratings: pd.DataFrame) -> tuple[pd.DataFrame, int]:
 def positive_interactions(
     ratings: pd.DataFrame, positive_threshold: int
 ) -> pd.DataFrame:
-    """Return declared positive preferences, retaining ratings for confidence."""
+    """Select ratings at or above the positive threshold, retaining their values."""
     return ratings.loc[
         ratings["rating"] >= positive_threshold, list(REQUIRED_COLUMNS)
     ].reset_index(drop=True)

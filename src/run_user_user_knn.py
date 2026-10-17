@@ -77,7 +77,6 @@ def main():
         X[dev_rows], n_neighbors=max_k
     )
 
-    # Group candidate rows once so each user's candidates can be scored.
     candidate_groups = {
         user_id: group
         for user_id, group in candidates.groupby("user_id", sort=False)
@@ -120,8 +119,7 @@ def main():
 
             item_cols = candidate_group["item_id"].map(item_to_col)
 
-            # A missing item would indicate an inconsistency in the prepared
-            # candidate set, so fail clearly rather than silently mis-score it.
+            # Every candidate must have a column in the training item matrix.
             if item_cols.isna().any():
                 raise ValueError(
                     f"Candidate item missing from training item mapping "

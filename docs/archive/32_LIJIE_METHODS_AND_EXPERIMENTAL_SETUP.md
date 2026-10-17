@@ -10,10 +10,11 @@
 - Final-run source: `b2f4d6b8222f9f5a9afd0633f54a235f50e52c69`
 - Evidence: `evidence/anime_methods_audit_20260926.json`
 
-The English sections below describe the implementation actually evaluated.
-They accompany the [parameter tables](33_LIJIE_FINAL_PARAMETER_TABLES.md) and
+These sections describe Lijie's evaluated implementation and accompany the
+[parameter tables](33_LIJIE_FINAL_PARAMETER_TABLES.md) and
 [results/discussion draft](31_LIJIE_ANIME_RESULTS_DISCUSSION_DRAFT.md). They cover
-Lijie's experiments only; they do not impose the same protocol on teammates.
+the model-based methods; see the current [result summary](../RESULTS.md) for
+cross-method protocol differences.
 MovieLens uses a separate locked transfer experiment; its completed results are
 in the [transfer record](../../evidence/movielens_transfer_results_20260928.md).
 
@@ -59,10 +60,9 @@ and the BPR component used in fusion have different locked configurations.
 ### Neural collaborative filtering
 
 We implement GMF, MLP and NeuMF architectures based on the neural collaborative
-filtering framework of He et al. [2]. The equations below specify our code,
-rather than asserting an exact reproduction of the original paper's training
-procedure. GMF maps the elementwise product of user and item embeddings to a
-scalar logit:
+filtering framework of He et al. [2]. The equations and training settings below
+describe this project's implementation. GMF maps the elementwise product of
+user and item embeddings to a scalar logit:
 
 \[
 s_{\mathrm{GMF}}(u,i)=\mathbf h^\top
@@ -241,23 +241,19 @@ Seeding alone does not promise bitwise-identical CUDA results across platforms.
 3. Cooper Union, “Anime Recommendations Database,” Kaggle.
    [Dataset source](https://www.kaggle.com/datasets/CooperUnion/anime-recommendations-database).
 
-Reference metadata was checked against the linked primary pages on 2026-09-26.
-The dataset page did not expose its description through the browsing tool, so
-the counts above come from the local manifest and archive, not a freshly read
-web description. This manuscript describes the project's implementation and
-does not claim novel invention of BPR/NCF or a complete reproduction of their
-published experiments.
+Reference metadata was checked on 2026-09-26. Dataset counts come from the
+local manifest and archived experiments. BPR and NCF are attributed to [1] and
+[2]; the experiments here use the project's own configurations.
 
-## Integration notes
+## Implementation references
 
-- Place the Methods text before the existing results draft; retain the exact
-  weighted-loss normalization and separate standalone/component BPR rows.
-- The source map and detailed audit are supporting material, not report prose.
-  Refer to `src/models/` for architecture, `src/training.py` for weights and
-  sampling, `src/train.py` for optimization/selection, `src/data.py` and the
-  frozen `src/prepare.py` for splits, and `src/evaluate.py`/`src/ensemble.py` for
-  metrics and fusion. The current preparation code also has a MovieLens adapter;
-  the draft was checked against the historical final-run source.
-- Anime user- or item-level cases still require frozen per-user predictions.
-  MovieLens has a separate anonymous case record and transfer summary. The
-  full-catalog Demo output does not substitute for formal test evaluation.
+The draft was checked against the historical final-run source. `src/models/`
+defines architectures; `src/training.py` handles weights and sampling;
+`src/train.py` handles optimization and checkpoint selection. Splits are in
+`src/data.py` and `src/prepare.py`; metrics and blending are in `src/evaluate.py`
+and `src/ensemble.py`. The current preparation code also supports MovieLens.
+
+Standalone BPR and the ensemble component use separate configurations. Anime
+user-level cases still require the archived per-user predictions. MovieLens has
+a separate anonymous case record and transfer summary. Demo recommendations use
+the full catalogue and cannot substitute for formal sampled-test cases.
