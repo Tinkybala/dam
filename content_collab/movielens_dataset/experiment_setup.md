@@ -1,4 +1,4 @@
-# 🎥 MovieLens Content Experiment Setup
+# MovieLens content experiment setup
 
 ## Objective
 
@@ -83,11 +83,9 @@ Training builds the profile. Validation selects M1–M4. Test evaluates the sele
 
 The 99 distractors are unobserved, not confirmed dislikes. They may be liked, disliked, or unknown to the user.
 
-Their role is to create a ranking problem.
-
 There is no cosine threshold. Success depends on the hidden positive's rank.
 
-## Test boundary
+## Test evaluation
 
 After validation selects one configuration:
 

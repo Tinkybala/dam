@@ -1,10 +1,7 @@
-# 🎬 Content-Based Filtering Algorithm
+# Anime content-based filtering
 
-## 🎯 Objective
-
-For each user, rank candidate anime by how closely their content matches the user's known preferences.
-
-The model does not predict an exact rating.
+The model ranks candidate anime by cosine similarity to a rating-weighted user profile.
+It predicts a ranking rather than an exact rating.
 
 ~~~text
 Anime metadata
@@ -18,11 +15,9 @@ Cosine similarity with candidates
 Top-10 recommendations
 ~~~
 
----
+## Inputs
 
-## 📥 Inputs
-
-The algorithm receives the prepared outputs described in **experiment_setup.md**:
+The inputs are described in experiment_setup.md:
 
 - 5,087,394 positive training interactions
 - 60,384 users
@@ -34,11 +29,9 @@ Only training ratings from 7 to 10 build user profiles.
 
 Community rating and member count are not content features.
 
----
+## 1. Convert each anime into a vector
 
-## 🧱 1. Convert each anime into a vector
-
-The implementation uses sparse, interpretable feature vectors rather than learned neural embeddings.
+Each anime has a sparse vector built from its metadata.
 
 ### Genre: TF-IDF
 
@@ -52,7 +45,7 @@ Adventure
 Sci-Fi
 ~~~
 
-Complete labels such as **Sci-Fi** and **Slice of Life** remain single features.
+Complete labels such as Sci-Fi and Slice of Life remain single features.
 
 The dataset has 43 genre features.
 
@@ -119,9 +112,7 @@ alchemist brotherhood
 
 Title features can identify related franchise entries, but may also produce repetitive recommendations.
 
----
-
-## 🧪 2. Feature configurations
+## 2. Feature configurations
 
 Four configurations are evaluated.
 
@@ -139,21 +130,13 @@ C3 vector =
 [43 genre values | 6 type values | 7 episode values]
 ~~~
 
-Different blocks do not need equal dimensions.
-
-No manual weights are applied to the blocks.
-
-After concatenation, the complete anime vector is L2-normalized:
+The blocks have different dimensions and no manual weights. The concatenated vector is L2-normalized:
 
 ~~~text
 anime_vector = anime_vector / length(anime_vector)
 ~~~
 
-The final vector has length 1.
-
----
-
-## 🎞️ Concrete anime-vector example
+## Example anime vector
 
 Consider Steins;Gate:
 
@@ -183,9 +166,7 @@ Episode section:
 
 The sections are concatenated into 56 values and normalized.
 
----
-
-## 👤 3. Build a user profile
+## 3. Build a user profile
 
 A user profile is a weighted combination of anime vectors from the user's positive training history.
 
@@ -212,7 +193,7 @@ profile(u) = normalize(
 
 Ratings below 7 and unrated watches do not enter the profile.
 
-### Concrete user example
+### Example user profile
 
 Suppose Alice's training positives are:
 
@@ -232,15 +213,11 @@ Alice_profile = normalize(
 )
 ~~~
 
-Steins;Gate influences the profile four times as strongly as Naruto.
+Steins;Gate has four times the weight of Naruto in this profile.
 
-The resulting vector represents Alice's overall content direction.
+## 4. Score candidate anime
 
----
-
-## 🔎 4. Score candidate anime
-
-Every candidate anime is compared with the user profile using cosine similarity.
+Candidates are scored by cosine similarity to the user profile:
 
 ~~~text
 score(user, anime)
@@ -249,9 +226,7 @@ score(user, anime)
 
 Because both vectors have length 1, this is equivalent to a dot product.
 
-A larger score means stronger content alignment.
-
-There is no fixed rule such as:
+Scores are used for ranking. The model does not apply a threshold such as:
 
 ~~~text
 score > 0.5 → recommend
@@ -259,7 +234,7 @@ score > 0.5 → recommend
 
 Only the relative order matters.
 
-### Concrete ranking example
+### Example ranking
 
 | Candidate | Cosine score | Rank |
 | --- | ---: | ---: |
@@ -268,13 +243,9 @@ Only the relative order matters.
 | Cowboy Bebop | 0.48 | 3 |
 | One Piece | 0.31 | 4 |
 
-The candidates are sorted by descending score.
+Candidates are sorted by descending score, with ties broken by ascending anime ID.
 
-Exact score ties are broken by ascending anime ID.
-
----
-
-## 📏 5. Select the feature configuration
+## 5. Select the feature configuration
 
 C1–C4 score the same fixed validation candidates.
 
@@ -293,11 +264,9 @@ The selection rule is:
 2. use Hit Rate@10 as a secondary diagnostic
 3. do not use test results to change the choice
 
-This is an ablation study. It shows whether type, episode length, or title improves genre-only ranking.
+The ablation compares the added features with genre-only ranking.
 
----
-
-## 🔒 6. Final test evaluation
+## 6. Final test evaluation
 
 After selecting one configuration:
 
@@ -308,11 +277,9 @@ After selecting one configuration:
 
 The final test result estimates how well the selected content representation generalizes to different hidden positives and distractors.
 
----
+## Experiment results
 
-## 📊 Experiment results
-
-The full experiment evaluated **60,384 users**. Each user had one hidden positive anime and 99 fixed unobserved candidates in both validation and test.
+The full experiment evaluated 60,384 users. Each user had one hidden positive anime and 99 fixed unobserved candidates in both validation and test.
 
 ### Validation ablation
 
@@ -321,25 +288,25 @@ The full experiment evaluated **60,384 users**. Each user had one hidden positiv
 | C1 | Genre | 0.218531 | 0.393349 |
 | C2 | Genre + type | 0.235430 | 0.417809 |
 | C3 | Genre + type + episode bucket | 0.242140 | 0.427232 |
-| **C4** | **Genre + title** | **0.261212** | **0.470356** |
+| C4 | Genre + title | 0.261212 | 0.470356 |
 
-Adding type and episode length improved the genre-only model. Title TF-IDF produced the largest improvement, so **C4 was selected using validation NDCG@10**.
+Adding type and episode length improved the genre-only model. Title TF-IDF produced the largest improvement, so C4 was selected using validation NDCG@10.
 
 ### Final test result
 
 | Selected configuration | NDCG@10 | Hit Rate@10 | Users |
 | --- | ---: | ---: | ---: |
-| **C4: Genre + title** | **0.259747** | **0.469114** | 60,384 |
+| C4: Genre + title | 0.259747 | 0.469114 | 60,384 |
 
-The hidden positive appeared in the top 10 for approximately **46.9% of users**. NDCG@10 was lower because it also rewards placing the positive near the very top of the list.
+The hidden positive appeared in the top 10 for approximately 46.9% of users. NDCG@10 was lower because it also rewards placing the positive near the very top of the list.
 
 ### Popularity reference
 
-The shared popularity baseline achieved validation NDCG@10 of **0.505679** and Hit Rate@10 of **0.770684**.
+The shared popularity baseline achieved validation NDCG@10 of 0.505679 and Hit Rate@10 of 0.770684.
 
-This does not invalidate the content model. It shows that, for warm anime with substantial interaction history, popularity is a strong signal that genre, type, episode length, and title alone do not capture. Content representations may still help explain recommendations and support items with limited interaction data, but this experiment does not directly test cold-start performance.
+Popularity outperformed the content features on this warm-item task. Content features may help explain recommendations or support items with little interaction data, but cold-start performance was not tested.
 
-### Main conclusion
+### Interpretation
 
 ~~~text
 Genre only
@@ -351,13 +318,11 @@ Best content configuration: C4
 Content alone remains insufficient for the strongest warm-item ranking
 ~~~
 
-The next practical step would be a hybrid recommender that combines content similarity with popularity or collaborative scores.
+A possible extension is to combine content similarity with popularity or collaborative scores.
 
----
+## Missing metadata
 
-## ⚠️ Special metadata case
-
-Anime 33242, **IS: Infinite Stratos 2 - Infinite Wedding**, has no genre but remains in the shared anime universe.
+Anime 33242, IS: Infinite Stratos 2 - Infinite Wedding, has no genre but remains in the shared anime universe.
 
 | Configuration | Representation |
 | --- | --- |
@@ -368,9 +333,7 @@ Anime 33242, **IS: Infinite Stratos 2 - Infinite Wedding**, has no genre but rem
 
 The item is never removed from validation or test candidates.
 
----
-
-## ✅ Algorithm summary
+## Algorithm summary
 
 ~~~text
 For each configuration C1–C4:
@@ -388,5 +351,3 @@ Select the highest-validation-NDCG configuration
 8. Score its fixed test candidates once
 9. Report test NDCG@10 and Hit Rate@10
 ~~~
-
-The algorithm recommends anime whose engineered content vectors point in a similar direction to the user's rating-weighted preference vector.

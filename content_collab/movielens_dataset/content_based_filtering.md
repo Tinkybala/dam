@@ -1,4 +1,4 @@
-# 🎥 MovieLens Content-Based Filtering
+# MovieLens content-based filtering
 
 ## Pipeline
 
@@ -16,7 +16,7 @@ Top-10 ranking
 
 ## Movie vectors
 
-### M1: Genres
+### M1: genres
 
 ~~~text
 movie vector = genre TF-IDF
@@ -24,7 +24,7 @@ movie vector = genre TF-IDF
 
 Pipe-separated genres remain complete labels. MovieLens 1M contains 18 genre dimensions.
 
-### M2: Genres and decade
+### M2: genres and decade
 
 ~~~text
 movie vector = [genre TF-IDF | decade one-hot]
@@ -36,7 +36,7 @@ Example:
 Toy Story (1995) → decade 1990s
 ~~~
 
-### M3: Genres and title
+### M3: genres and title
 
 ~~~text
 movie vector = [genre TF-IDF | title TF-IDF]
@@ -44,7 +44,7 @@ movie vector = [genre TF-IDF | title TF-IDF]
 
 Title processing removes the final release year, lowercases text, normalizes punctuation and whitespace, and uses word unigrams and bigrams appearing in at least two warm movies.
 
-### M4: Genres, title, and decade
+### M4: genres, title, and decade
 
 ~~~text
 movie vector =
@@ -57,9 +57,7 @@ Each block is L2-normalized before concatenation. The complete vector is normali
 
 For M4, a movie with all three blocks has approximately equal squared-magnitude contribution from genre, title, and decade.
 
-This avoids the Anime experiment's problem where raw title TF-IDF dominated the combined vector.
-
-No weights are tuned manually.
+This controls the title block's larger contribution observed in the Anime experiment. No block weights are tuned manually.
 
 ## User profiles
 
