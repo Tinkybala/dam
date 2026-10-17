@@ -1,164 +1,125 @@
-# Experiment records
+# Running the experiments
 
-This file records repository-facing experiment checkpoints. Generated datasets,
-predictions, checkpoints, and raw result directories remain outside Git.
+Run these commands from the repository root after the [installation steps](README.md#quick-start).
+The tests need no datasets. Full experiments need the original data and can be expensive on CPU.
 
-## 2026-09-28 — Locked MovieLens 1M transfer completed
+## Datasets
 
-Candidate-lock commit `c5f903579c81d9a58e051714c27e2a9483946ca9` and
-final-run commit `61863193e11650cdd579a102f172a51582502552` were deployed as
-separate releases. Data integrity, two CUDA smoke jobs, 13/13 formal model runs,
-12/12 trainable CUDA gates, three fixed ensembles, 10 deterministic anonymous
-cases and a no-bulk metadata archive passed. Formal runs did not retry, time out,
-change parameters or fall back to CPU. The final ensemble reached
-0.632039 ± 0.003126 sampled-candidate test NDCG@10 and
-0.838692 ± 0.003120 HR@10.
+- **Anime:** obtain `anime.csv` and `rating.csv` from the [Anime Recommendations Database](https://www.kaggle.com/datasets/CooperUnion/anime-recommendations-database).
+- **MovieLens 1M:** extract `ratings.dat` and `movies.dat` from [GroupLens](https://grouplens.org/datasets/movielens/1m/).
 
-See [the detailed transfer report](evidence/movielens_transfer_results_20260928.md),
-[machine-readable summary](evidence/movielens_transfer_summary_20260928.json),
-and [anonymous case record](evidence/movielens_case_study_20260928.json).
+Use this local layout; `data/` and `artifacts/` are ignored by Git:
 
-## 2026-09-26 — Methods, setup and parameter-table draft
+```text
+data/
+  anime.csv
+  rating.csv
+  ml-1m/
+    ratings.dat
+    movies.dat
+```
 
-Added implementation-matched model/loss/ensemble equations, dataset and candidate
-construction, checkpoint selection, and final parameter tables. All 19 archived
-run configurations match both the archived YAML and the current final configs.
-Verified the local raw-rating checksum against the Anime manifest, reconciled
-run populations and split counts, and recovered best epochs from validation
-histories. Source and environment hashes are recorded in
-`evidence/anime_methods_audit_20260926.json`. BPR/NCF reference metadata was checked
-against the author-deposited primary records.
+The shared preparation keeps positive ratings (Anime ≥ 7; MovieLens ≥ 4), applies iterative positive 5-core filtering,
+and holds out one positive for validation and one for test per user.
+Each held-out positive is ranked against 99 fixed unobserved candidates.
+Every observed rating is excluded from the negative pool, including low or unrated observations.
 
-See [Methods/setup](docs/32_LIJIE_METHODS_AND_EXPERIMENTAL_SETUP.md) and
-[parameter tables](docs/33_LIJIE_FINAL_PARAMETER_TABLES.md). No model code,
-experiment configuration, dataset or prediction was changed in this writing step.
+## Content-based filtering
 
-## 2026-09-26 — Anime report figures from archived results
+```bash
+python -m jupyterlab
+```
 
-Prepared model-comparison, component/fusion and validation-only alpha figures in
-PNG/SVG/PDF, with full-precision source tables and hashes. Cross-checked 19 model
-metrics against the verified final metadata archive and recomputed mean/sample
-SD. The actual BPR fusion component is kept separate from the standalone BPR
-baseline. Phase D alpha results remain separate from full-user final test data.
+Open the notebooks in this order:
 
-See [figure captions and interpretation](docs/30_LIJIE_ANIME_REPORT_FIGURES.md).
-No retraining, new parameter selection, MovieLens execution or GPU use occurred.
+| Dataset | Preparation and evaluation | Optional visualization |
+| --- | --- | --- |
+| Anime | `content_collab/anime_dataset/content_based_shared_protocol.ipynb` | `content_collab/anime_dataset/3_embedding_visualization.ipynb` |
+| MovieLens | `content_collab/movielens_dataset/1_data_preparation.ipynb`, then `2_content_based_movielens.ipynb` in the same folder | `content_collab/movielens_dataset/3_embedding_visualization.ipynb` |
 
-The v2 revision adds paired differences against standalone BPR, replaces the
-repeated component bars with all 12 seed/component/metric fusion gains, and
-marks the NDCG-selected alpha on both parameter panels. Figures now use 7.4-inch
-layouts, 300-dpi PNGs and vector exports; v1 files are preserved. An English
-[results/discussion draft](docs/31_LIJIE_ANIME_RESULTS_DISCUSSION_DRAFT.md) maps
-claims to evidence and records missing cases/transfer results. The updated
-analysis suite passes with 62 tests; the archived plotting input is unchanged.
+Set `ANIME_DATASET_DIR` to the directory containing `anime.csv` and `rating.csv`,
+and `MOVIELENS_1M_DIR` to the extracted `ml-1m` folder before starting Jupyter.
 
-## 2026-09-26 — MovieLens local preparation, GPU pending
+```powershell
+# PowerShell, from the repository root
+$env:ANIME_DATASET_DIR = (Resolve-Path data).Path
+$env:MOVIELENS_1M_DIR = (Resolve-Path data/ml-1m).Path
+python -m jupyterlab
+```
 
-MovieLens 1M adapter and artifact integrity gate implemented; 57 tests pass.
-Local frozen artifacts contain 6,034 users, 3,125 movies, 562,308 training
-positives, and 100 validation/test candidates per user. All 13 transferred
-configs keep test evaluation disabled. No production training or test metrics
-were run. Candidate-lock commit and CUDA preflight remain pending.
+```bash
+# Bash, from the repository root
+export ANIME_DATASET_DIR="$PWD/data"
+export MOVIELENS_1M_DIR="$PWD/data/ml-1m"
+python -m jupyterlab
+```
 
-See [preparation evidence](evidence/movielens_local_preparation_20260926.md) and
-its accompanying JSON for provenance, hashes and the next execution gate.
+Select C1–C4 or M1–M4 using validation NDCG@10; the selected configurations are C4 and M2.
+The older Anime cleaning notebook is exploratory and is separate from the reported shared-protocol experiment.
 
-## 2026-09-02 — Anime full-user preflight benchmark
+## User-user neighbourhood
 
-### Status
+These scripts use fixed artifact folders. Preparation refuses to overwrite a non-empty output folder.
 
-- Purpose: final-run feasibility and provenance check
-- Evaluation mode: validation only
-- Formal test status: sealed; no recorded metric contains a `test` field
-- Source commit: `7ed1c2b6f0c789b6e1c20c52c6e116b9bdf07426`
-- Release identifier: `dam-7ed1c2b6f0c789b6e1c20c52c6e116b9bdf07426`
-- Metadata archive SHA-256:
-  `d78fa8b91418162ae3b5c0476452b5d44e9c13155f8641b2a43412f38530fb7e`
+```bash
+python -m src.prepare --ratings data/rating.csv --output artifacts/user_user_knn_anime
+python -m src.run_user_user_knn
+python -m src.run_user_user_knn_test
 
-### Frozen evaluation context
+python -m src.prepare --dataset movielens-1m --ratings data/ml-1m/ratings.dat --output artifacts/user_user_knn_movielens
+python -m src.run_user_user_knn_movielens
+python -m src.run_user_user_knn_test_movielens
+```
 
-- Dataset: Anime Recommendations Database, positive threshold `rating >= 7`
-- Eligible users: 60,384
-- Warm items: 7,223
-- Training positives: 5,087,394
-- Split seed: 42
-- Candidate protocol: one validation positive plus 99 fixed unseen negatives
-- Training seed: 42
-- Trainable-model benchmark budget: one epoch
-- Hardware: NVIDIA RTX A6000
+Validation evaluates K = 5, 10, 20, 50; test uses the selected K = 50.
+Outputs are under each artifact folder's `user_user_knn_results/` directory.
+Anime evaluates the fixed 10,000 development users while retaining all training users as possible neighbours.
+MovieLens evaluates all eligible users.
+The formal scripts use binary positive interactions; `UserUserKNN` and [earlier examples](examples/README.md) also illustrate rating-vector recommendations.
 
-### Validation metrics
+## Item-item and model-based methods
 
-These are one-epoch feasibility measurements, not final model results and not a
-new model-selection stage.
+Prepare the common artifact folders:
 
-| Model | NDCG@10 | Hit Rate@10 | Total runtime |
-|---|---:|---:|---:|
-| Popular | 0.505679 | 0.770684 | 1.7 s |
-| BPR | 0.657300 | 0.904528 | 118.3 s |
-| GMF | 0.500919 | 0.764590 | 47.0 s |
-| MLP | 0.611773 | 0.871688 | 49.2 s |
-| NeuMF | 0.654878 | 0.898682 | 49.7 s |
-| Weighted NeuMF | 0.653950 | 0.897721 | 49.9 s |
+```bash
+python -m src.prepare --ratings data/rating.csv --output artifacts/anime-r7
+python -m src.prepare --dataset movielens-1m --ratings data/ml-1m/ratings.dat --output artifacts/movielens-1m-r4
+```
 
-### Acceptance evidence
+Run the deterministic item-item models:
 
-- Six of six planned runs completed.
-- Every metric records the frozen source commit and 60,384 selected users.
-- Every embedded benchmark configuration matches its locked final configuration
-  after excluding the permitted benchmark-only changes: output directory,
-  epochs, and early-stopping patience.
-- All five trainable models completed one epoch on CUDA.
-- Logs contain no traceback, CUDA out-of-memory error, non-finite loss, or
-  timeout.
-- GPU monitoring covered 320 one-second samples on GPU 0. Peak observed memory
-  was 590 MiB of 46,068 MiB; peak utilization was 45%.
-- The repository test suite passed: 24 tests.
+```bash
+python -m src.train --config configs/final/anime_item_item_final.yaml
+python -m src.train --config configs/final/movielens_item_item_final.yaml
+```
 
-### Reproducibility note
+Model-based examples:
 
-The server used PyArrow 17.0.0 and the local verification environment used
-PyArrow 25.0.1. Parquet byte hashes therefore differed. The local verification
-record reports matching canonical logical-content signatures, row counts,
-schemas, and fixed-position samples for all nine prepared artifacts. Reports
-must distinguish physical serialization identity from logical-content
-equivalence.
+```bash
+python -m src.train --config configs/final/anime_bpr_final_seed42.yaml
+python -m src.train --config configs/movielens/movielens_bpr_seed42.yaml
+```
 
-### Interpretation boundary
+Final neural/BPR configurations use CUDA. For a small CPU smoke run, copy a YAML in the same directory,
+then set `device: cpu`, `gpu_sampling: false`, `max_users: 100`, `epochs: 2` and a separate `output_dir`.
+Keep `evaluate_test: false` for exploratory runs. Config paths are relative to the YAML file.
+Such a smoke run checks execution; it does not reproduce the recorded full-data scores.
 
-The sampled metrics rank one held-out positive among 100 candidates. They must
-not be presented as full-catalog performance, catalog coverage, or final test
-evidence. The locked final configurations remain test-sealed at this checkpoint.
+`metrics.json` records scores; `model.pt` stores the best validation checkpoint for trainable models.
+Prediction tables are saved as Parquet files. Model-based results use seeds 42, 43 and 44.
 
-## 2026-09-05 — Anime locked final experiment
+The final Anime ensemble uses `anime_bpr_ensemble_component_final_seed*.yaml`,
+not the separate standalone BPR baseline, together with Weighted NeuMF.
+It combines per-user percentile ranks with weights 0.7 and 0.3.
+MovieLens uses the transferred BPR configuration and the same blend.
+`src.ensemble` evaluates validation blends; the original final-test helpers are in `ops/`.
+The final scores in [results](docs/RESULTS.md) are existing measurements, not results from a new tuning run.
 
-### Status
+## Checks
 
-- Final training source commit:
-  `b2f4d6b8222f9f5a9afd0633f54a235f50e52c69`
-- The locked 19-run campaign completed without retry, timeout, or manual
-  intervention during training.
-- All 19 metrics passed the schema gate; all 18 trainable runs passed the GPU
-  attach gate.
-- The pre-declared `w=0.7` ensemble was generated from the locked component
-  outputs without further weight search. It ranked first on both final metrics:
-  `0.799658 ± 0.000259` NDCG@10 and `0.956335 ± 0.000843` HR@10.
-- Six ensemble artifacts and the final summary passed their schema gates.
-- The metadata archive matched locally and remotely by SHA-256, the final
-  report was committed, and the one-time SSH credential was removed locally
-  and from the server.
-- The campaign is complete and archived. Stage F must not be rerun, and the
-  test result must not be used to restart tuning.
+```bash
+python -m pytest
+```
 
-The credential-free gate record is in
-[`evidence/final_stage_f_gate_summary_2026-09-04.md`](evidence/final_stage_f_gate_summary_2026-09-04.md).
-The sanitized continuation checkpoint and helper hashes are in
-[`evidence/final_test_continuation_checkpoint_2026-09-05.md`](evidence/final_test_continuation_checkpoint_2026-09-05.md).
-Operational helpers are retained under [`ops/`](ops/); generated metrics,
-predictions, model checkpoints, server coordinates, and access credentials stay
-outside Git.
-
-The complete stage-by-stage explanation is in
-[`docs/EXPERIMENT_PIPELINE_OVERVIEW.md`](docs/EXPERIMENT_PIPELINE_OVERVIEW.md),
-and the final results are in
-[`evidence/final_result_report_2026-09-05.md`](evidence/final_result_report_2026-09-05.md).
+This includes shared preparation/ranking checks, model and demo checks, item-item tests, and MovieLens content-feature tests.
+It does not download data, run full notebooks or repeat the GPU experiments.

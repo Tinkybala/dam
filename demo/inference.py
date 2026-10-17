@@ -22,10 +22,7 @@ class InferenceError(RuntimeError):
 
 
 def _load_state(path: Path) -> dict[str, torch.Tensor]:
-    try:
-        return torch.load(path, map_location="cpu", weights_only=True)
-    except TypeError:  # PyTorch 2.1 compatibility
-        return torch.load(path, map_location="cpu")
+    return torch.load(path, map_location="cpu", weights_only=True)
 
 
 def _fill_metadata(frame: pd.DataFrame) -> pd.DataFrame:
@@ -76,11 +73,7 @@ class Recommender:
         neural_spec = models["weighted_neumf_seed42"]
         user_count = len(self.user_mapping)
         item_count = len(self.item_mapping)
-        if (bpr_spec["user_count"], bpr_spec["item_count"]) != (user_count, item_count):
-            raise BundleError("BPR manifest dimensions disagree with mappings")
-        if (neural_spec["user_count"], neural_spec["item_count"]) != (user_count, item_count):
-            raise BundleError("NeuMF manifest dimensions disagree with mappings")
-
+        # load_state_dict checks that the saved tensors fit these model dimensions.
         self.bpr = BPRMatrixFactorization(user_count, item_count, int(bpr_spec["embedding_dim"]))
         self.bpr.load_state_dict(_load_state(self.bundle_dir / bpr_spec["file"]))
         self.neural = NeuMF(

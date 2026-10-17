@@ -1,49 +1,68 @@
-# Anime Recommender Offline Demo
+# Offline recommendation demo
 
-这是一个单面板、本地 Streamlit 展示系统。它使用冻结的 BPR ensemble
-component seed 42 与 Weighted NeuMF seed 42，在 CPU 上为 20 位匿名已知用户
-评分完整 warm catalog，并按固定 `0.7 / 0.3` 百分位融合返回 Top-10。
+The Streamlit demo shows viewing histories and full-catalogue Top-10 recommendations for 20 anonymous existing Anime users.
+It uses the frozen seed-42 BPR ensemble component and Weighted NeuMF checkpoints, with a 0.7/0.3 percentile-rank blend.
+The interface supports English and Chinese.
 
-## 启动
+## Run
 
-在仓库根目录执行：
+From the repository root:
 
 ```bash
 python -m pip install -e ".[demo]"
-streamlit run demo/app.py
+python -m streamlit run demo/app.py
 ```
 
-默认从仓库根目录的 `demo_bundle/` 读取 bundle，也可以用环境变量覆盖位置：
+The app reads `demo_bundle/` by default. You can select another bundle:
 
 ```bash
-DAM_DEMO_BUNDLE=/path/to/demo_bundle streamlit run demo/app.py
+# Bash
+DAM_DEMO_BUNDLE=/path/to/demo_bundle python -m streamlit run demo/app.py
 ```
 
-真实 bundle 被 `.gitignore` 排除，不能提交 checkpoint、用户交互或密钥。启动时
-会先逐文件核对 manifest SHA-256；缺失或篡改会 fail-fast。Demo 不读取训练、验证
-或 test prediction 文件，也不连接服务器。
+```powershell
+$env:DAM_DEMO_BUNDLE = "C:/path/to/demo_bundle"
+python -m streamlit run demo/app.py
+```
 
-`manifest.example.json` 仅是结构模板；真实 manifest 随本地 bundle 一起生成，
-不会提交到仓库。
+## Local bundle
 
-## 展示内容
+A source-only clone does not include the trained bundle.
+It needs the two checkpoints, ID mappings, observed histories and metadata named in [manifest.example.json](manifest.example.json).
+The example manifest describes paths and settings; it is not a replacement for those files.
 
-- 选择一位匿名用户；
-- 使用页面右上角按钮在完整中文与英文界面之间切换；
-- 查看 5 部历史动漫和可展开的更多历史；
-- 查看带本地缓存海报的全目录 Top-10；
-- 缺失海报使用仓库内的占位图。
+Place the existing trained bundle in `demo_bundle/` before launching the app.
+There is no standalone bundle-export command in this repository.
+If assembling it from the original training outputs, use these filenames:
 
-海报只改善展示效果，不参与模型输入或排序。缓存位于已忽略的
-`demo_bundle/posters/`，不能提交 Git。使用以下命令从本地原始评分数据扩充用户、
-预计算展示集合并获取 AniList 海报：
+| Bundle file | Original source |
+| --- | --- |
+| `bpr_seed42_model.pt` | Ensemble-component BPR seed-42 `model.pt` |
+| `weighted_neumf_seed42_model.pt` | Weighted NeuMF seed-42 `model.pt` |
+| `user_mapping.parquet`, `item_mapping.parquet` | The matching Anime preparation artifacts |
+| `demo_users.parquet` | Anonymous labels with model-known `user_id` values |
+| `observed_by_user.parquet` | Observed `user_id` / `anime_id` pairs for those demo users |
+| `manifest.json` | Filled-in dimensions, paths and settings from the example manifest |
+
+Checkpoint embedding dimensions must match the manifest and mappings.
+The original Anime checkpoints use BPR dimension 128 and Weighted NeuMF dimension 64, with hidden layers `[64, 32, 16, 8]`.
+The catalogue metadata is already included at `demo/assets/anime_metadata.parquet`.
+
+With a valid bundle, you can refresh the showcase users and poster cache:
 
 ```bash
-python -m demo.prepare_showcase \
-  --ratings /path/to/rating.csv \
-  --bundle demo_bundle \
-  --user-count 20
+python -m demo.prepare_showcase --ratings data/rating.csv --bundle demo_bundle --user-count 20
 ```
 
-脚本不会读取 validation/test candidates、labels 或 predictions。AniList 只在准备
-阶段访问；Demo 运行时保持离线。
+`DAM_DEMO_BUNDLE` must point to the resulting bundle directory.
+The preparation step downloads posters from AniList; the running app uses only local files.
+Missing posters use the included placeholder.
+Posters do not affect model scoring.
+
+## Evaluation scope
+
+The app ranks unseen items from the 7,223-item warm Anime catalogue.
+It does not run the sampled-candidate test or use test predictions to produce recommendations.
+The report's NDCG@10 and HR@10 therefore do not measure demo accuracy.
+
+Keep checkpoints, original user identifiers, interaction histories and poster caches in the ignored `demo_bundle/` directory.

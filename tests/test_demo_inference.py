@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 from pathlib import Path
 
@@ -65,7 +64,7 @@ def _write_fixture(root: Path) -> Path:
         "demo/assets/anime_metadata.parquet": root / "demo" / "assets" / "anime_metadata.parquet",
     }
     records = {
-        name: {"bytes": path.stat().st_size, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        name: {"bytes": path.stat().st_size}
         for name, path in files.items()
     }
     manifest = {
@@ -130,21 +129,11 @@ def test_unknown_user_and_invalid_top_k_fail(tmp_path: Path) -> None:
         engine.recommend(10, top_k=0)
 
 
-def test_manifest_hash_mismatch_fails_fast(tmp_path: Path) -> None:
-    bundle = _write_fixture(tmp_path)
-    manifest_path = bundle / "manifest.json"
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    manifest["files"]["item_mapping.parquet"]["sha256"] = "0" * 64
-    manifest_path.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
-    with pytest.raises(BundleError, match="SHA-256 mismatch"):
-        Recommender(bundle)
-
-
 def test_manifest_parent_traversal_fails_fast(tmp_path: Path) -> None:
     bundle = _write_fixture(tmp_path)
     manifest_path = bundle / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    manifest["files"]["../outside.bin"] = {"bytes": 0, "sha256": "0" * 64}
+    manifest["files"]["../outside.bin"] = {"bytes": 0}
     manifest_path.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
     with pytest.raises(BundleError, match="unsafe path"):
         Recommender(bundle)

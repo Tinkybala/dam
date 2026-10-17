@@ -9,8 +9,6 @@ from torch import nn
 class BPRMatrixFactorization(nn.Module):
     def __init__(self, user_count: int, item_count: int, embedding_dim: int) -> None:
         super().__init__()
-        if min(user_count, item_count, embedding_dim) < 1:
-            raise ValueError("user_count, item_count, and embedding_dim must be positive")
         self.user_embedding = nn.Embedding(user_count, embedding_dim)
         self.item_embedding = nn.Embedding(item_count, embedding_dim)
         self.item_bias = nn.Embedding(item_count, 1)
@@ -31,6 +29,7 @@ class BPRMatrixFactorization(nn.Module):
         positive_items: torch.Tensor,
         negative_items: torch.Tensor,
     ) -> torch.Tensor:
+        # BPR learns to score a user's positive item above a sampled unseen item.
         difference = self(users, positive_items) - self(users, negative_items)
         return -torch.nn.functional.logsigmoid(difference).mean()
 

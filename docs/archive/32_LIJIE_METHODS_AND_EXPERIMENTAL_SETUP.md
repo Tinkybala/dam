@@ -15,7 +15,7 @@ They accompany the [parameter tables](33_LIJIE_FINAL_PARAMETER_TABLES.md) and
 [results/discussion draft](31_LIJIE_ANIME_RESULTS_DISCUSSION_DRAFT.md). They cover
 Lijie's experiments only; they do not impose the same protocol on teammates.
 MovieLens uses a separate locked transfer experiment; its completed results are
-in the [transfer record](../evidence/movielens_transfer_results_20260928.md).
+in the [transfer record](../../evidence/movielens_transfer_results_20260928.md).
 
 ## Methods
 

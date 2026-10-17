@@ -2,7 +2,7 @@
 
 This is the working integration guide for the recommender-system technical
 review. The course's Project 1 technical-review slides govern assessment and
-submission; [`tasks.txt`](../tasks.txt) governs ownership. A method's presence
+submission; [`tasks.txt`](tasks.txt) governs ownership. A method's presence
 in Git does not by itself mean that its experiments or report contribution are
 finished.
 

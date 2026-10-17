@@ -139,4 +139,4 @@ collaborative-filtering experiment.
 5. **Clean handoff:** no generated bulk artifacts, machine coordinates, or credentials in Git.
 
 For exact final values and caveats, see
-[`../evidence/final_result_report_2026-09-05.md`](../evidence/final_result_report_2026-09-05.md).
+[`../evidence/final_result_report_2026-09-05.md`](../../evidence/final_result_report_2026-09-05.md).

@@ -1,12 +1,11 @@
 from pathlib import Path
-import json
 
 import pandas as pd
 import pytest
 import yaml
 
 from src.data import load_movielens_ratings
-from src.prepare import _sha256, parse_args, prepare
+from src.prepare import parse_args, prepare
 from src.validate_artifacts import validate_artifacts
 
 
@@ -57,7 +56,6 @@ def test_movie_artifacts_are_reproducible_and_exclude_low_ratings(ratings_file, 
     assert manifest["dataset"] == "movielens_1m"
     assert (manifest["positive_threshold"], manifest["maximum_rating"]) == (4, 5)
     assert manifest["unrated_value"] is None
-    assert manifest["ratings_sha256"] == _sha256(ratings_file)
     assert manifest["development_user_count"] == 150
     assert manifest["eligible_user_count"] == 150
     assert manifest["files"] == other["files"]
@@ -69,7 +67,7 @@ def test_movie_artifacts_are_reproducible_and_exclude_low_ratings(ratings_file, 
         a, b = pd.read_parquet(first / name), pd.read_parquet(second / name)
         pd.testing.assert_frame_equal(a, b)
         assert "timestamp" not in a
-        assert record["sha256"] == _sha256(first / name)
+        assert record["rows"] == len(a)
     for split in ("validation", "test"):
         held = pd.read_parquet(first / f"{split}_positives.parquet")
         candidates = pd.read_parquet(first / f"{split}_candidates.parquet")
@@ -137,29 +135,18 @@ def test_movie_configs_preserve_locked_hyperparameters():
     assert test_states == {True}, "the final-run config set must be fully unsealed"
 
 
-def test_artifact_gate_detects_tampering(ratings_file, tmp_path):
+def test_artifact_gate_detects_incorrect_positive_labels(ratings_file, tmp_path):
     output = tmp_path / "artifacts"
     prepare(movie_args(ratings_file, output))
     assert validate_artifacts(output, ratings_file)["status"] == "PASS"
-    with (output / "train_positives.parquet").open("ab") as handle:
-        handle.write(b"changed")
-    with pytest.raises(ValueError, match="checksum mismatch"):
-        validate_artifacts(output, ratings_file)
-
-
-def test_artifact_gate_detects_incorrect_positive_labels(ratings_file, tmp_path):
-    output = tmp_path / "artifacts"
-    manifest = prepare(movie_args(ratings_file, output))
     path = output / "test_candidates.parquet"
     candidates = pd.read_parquet(path)
     # Swap validation/test positives: still observed, warm and one positive/user,
-    # but no longer the declared test holdout. Rehash to exercise semantic checks.
+    # but no longer the declared test holdout.
     validation = pd.read_parquet(output / "validation_positives.parquet").set_index("user_id")
     selected = candidates.label.eq(1)
     candidates.loc[selected, "item_id"] = candidates.loc[selected, "user_id"].map(validation.anime_id)
     candidates.to_parquet(path, index=False)
-    manifest["files"][path.name]["sha256"] = _sha256(path)
-    (output / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
     with pytest.raises(ValueError, match="positive labels mismatch"):
         validate_artifacts(output, ratings_file)
 

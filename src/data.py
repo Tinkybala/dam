@@ -73,7 +73,6 @@ def remove_ambiguous_pairs(ratings: pd.DataFrame) -> tuple[pd.DataFrame, int]:
     Keeping neither version avoids inventing a preference when duplicate rows
     disagree. The returned count is the number of distinct ambiguous pairs.
     """
-    _require_columns(ratings, REQUIRED_COLUMNS)
     duplicate_rows = ratings.duplicated(["user_id", "anime_id"], keep=False)
     ambiguous_pairs = int(
         ratings.loc[duplicate_rows, ["user_id", "anime_id"]]
@@ -87,7 +86,6 @@ def positive_interactions(
     ratings: pd.DataFrame, positive_threshold: int
 ) -> pd.DataFrame:
     """Return declared positive preferences, retaining ratings for confidence."""
-    _require_columns(ratings, REQUIRED_COLUMNS)
     return ratings.loc[
         ratings["rating"] >= positive_threshold, list(REQUIRED_COLUMNS)
     ].reset_index(drop=True)
@@ -99,7 +97,6 @@ def iterative_positive_k_core(
     """Repeatedly remove users and items below ``min_degree``."""
     if min_degree < 1:
         raise ValueError("min_degree must be positive")
-    _require_columns(positives, ("user_id", "anime_id"))
 
     work = positives.copy()
     initial = _counts(work)
@@ -134,7 +131,6 @@ def leave_two_out_split(positives: pd.DataFrame, seed: int = 42) -> SplitResult:
     Held-out items are deterministically repaired when necessary so every
     validation/test item has another positive interaction in training.
     """
-    _require_columns(positives, ("user_id", "anime_id"))
     counts = positives.groupby("user_id")["anime_id"].size()
     if counts.empty or int(counts.min()) < 3:
         raise ValueError("every split user must have at least three positives")
@@ -182,7 +178,6 @@ def sample_evaluation_candidates(
     """Create a fixed candidate table with one positive and unseen negatives."""
     if negative_count < 1:
         raise ValueError("negative_count must be positive")
-    _require_columns(held_out, ("user_id", "anime_id"))
     if held_out["user_id"].duplicated().any():
         raise ValueError("held_out must contain exactly one row per user")
 
@@ -195,6 +190,7 @@ def sample_evaluation_candidates(
         if positive_item not in universe:
             raise ValueError(f"held-out item {positive_item} is not a warm item")
         observed = observed_by_user.get(user, set())
+        # Low ratings are observed too: they are not sampled as unseen negatives.
         available = universe[~np.isin(universe, np.fromiter(observed, dtype=np.int64))]
         if len(available) < negative_count:
             raise ValueError(
@@ -242,6 +238,11 @@ def assert_split_integrity(
 
 
 def _repair_warm_items(split: SplitResult) -> SplitResult:
+    """Swap cold holdouts with the same user's training items, without losing a holdout.
+
+    A learned item embedding needs a training interaction. The replacement must
+    have another training occurrence so that the swap does not create a new cold item.
+    """
     train = split.train.copy()
     held_parts = [split.validation.copy(), split.test.copy()]
 
@@ -287,9 +288,3 @@ def _repair_warm_items(split: SplitResult) -> SplitResult:
 
 def _counts(frame: pd.DataFrame) -> tuple[int, int]:
     return frame["user_id"].nunique(), frame["anime_id"].nunique()
-
-
-def _require_columns(frame: pd.DataFrame, columns: Iterable[str]) -> None:
-    missing = set(columns).difference(frame.columns)
-    if missing:
-        raise ValueError(f"missing required columns: {sorted(missing)}")

@@ -92,7 +92,7 @@ insufficient. MovieLens transfer results have now been completed under a locked
 configuration. The common-model NDCG ordering and positive gains from the fixed
 ensemble were observed on both datasets, but the direction of the Weighted
 NeuMF-versus-BPR HR difference changed. See the separate
-[MovieLens results record](../evidence/movielens_transfer_results_20260928.md).
+[MovieLens results record](../../evidence/movielens_transfer_results_20260928.md).
 The Anime test remains frozen, and neither dataset's final test was used to
 select new hyperparameters.
 
