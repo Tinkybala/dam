@@ -1,7 +1,7 @@
 # Archived experiment notes
 
-These notes preserve the original experiment history, parameter selection and report preparation.
-Dates and completion states describe their original checkpoints; they are not current project requirements.
+These notes record the original experiments, parameter selection and report preparation.
+Dates and completion states refer to the runs described in each file.
 
 Start with the current [experiment instructions](../../EXPERIMENTS.md) and [result summary](../RESULTS.md).
 
@@ -11,6 +11,3 @@ Useful records:
 - [Final model-based parameter tables](33_LIJIE_FINAL_PARAMETER_TABLES.md)
 - [Anime figure descriptions](30_LIJIE_ANIME_REPORT_FIGURES.md)
 - [Original experiment history](EXPERIMENT_HISTORY.md)
-
-The old team framework and handoff template are historical coordination notes.
-Running this course project does not require following their staged workflow.

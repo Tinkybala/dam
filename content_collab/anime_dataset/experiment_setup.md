@@ -1,18 +1,9 @@
-# 🧪 Content-Based Recommender: Experiment Setup
+# Anime content experiment setup
 
-## 🎯 Objective
+The task is to rank one anime the user rated positively among 99 fixed unobserved anime.
+NDCG@10 is the selection metric. The split is random, so this is not a chronological next-watch test.
 
-The experiment asks:
-
-> Can a content-based model rank an anime that a user is known to like above randomly sampled anime whose preference is unknown?
-
-This is a **top-10 ranking task**.
-
-It does not predict an exact rating or the user's literal next watch.
-
----
-
-## 📦 Raw data
+## Raw data
 
 ### Rating table
 
@@ -42,11 +33,9 @@ The content system may use:
 - episode count
 - title
 
-Community rating and members are not used as content because they describe popularity or global quality rather than the anime itself.
+Community rating and member count are excluded from the content features; both reflect aggregate user activity.
 
----
-
-## 🧹 Data-cleaning process
+## Data-cleaning process
 
 ### 1. Remove ambiguous duplicate pairs
 
@@ -73,9 +62,7 @@ Low and unrated interactions are still retained as observed history. They preven
 
 ### 3. Apply the iterative positive 5-core
 
-Every retained user must have at least five positive anime.
-
-Every retained anime must have at least five positive users.
+Every retained user and anime must have at least five positive interactions.
 
 The filter repeats until both conditions hold:
 
@@ -103,9 +90,7 @@ Consequences:
 
 A warm anime is an anime that remains represented in training.
 
----
-
-## ✂️ Training, validation, and test split
+## Training, validation, and test split
 
 The split is performed within each user using seed 42.
 
@@ -123,9 +108,9 @@ One user's positive anime
 | Validation positives | 60,384 | Select the content configuration |
 | Test positives | 60,384 | Final evaluation only |
 
-The preparation code ensures every validation and test anime still appears in training.
+The split is repaired so that every validation and test anime also appears in training.
 
-### Concrete example
+### Example split
 
 ~~~text
 Alice's training positives:
@@ -142,9 +127,7 @@ Alice's test positive:
 
 Only the training anime may build Alice's profile.
 
----
-
-## 👤 How ratings are used during training
+## How ratings are used during training
 
 Only positive training interactions enter the user profile.
 
@@ -161,7 +144,7 @@ weight = rating - 6
 | 9 | 3 |
 | 10 | 4 |
 
-Therefore, ratings 7 and 9 are both positive, but they are not equally influential during training.
+Higher positive ratings contribute more to the profile.
 
 ~~~text
 Alice's profile = normalize(
@@ -173,9 +156,7 @@ Alice's profile = normalize(
 
 Ratings 1–6 and -1 do not move the profile toward or away from an anime.
 
----
-
-## 🔎 Evaluation candidates
+## Evaluation candidates
 
 Each validation or test case has 100 candidates:
 
@@ -187,11 +168,8 @@ Each validation or test case has 100 candidates:
 100 candidates
 ~~~
 
-The 99 unobserved anime are better described as **distractors**, not confirmed negatives.
-
-They could be anime that the user would like, dislike, or feel neutral about. The dataset does not tell us.
-
-Their role is to create a ranking problem. Without competing candidates, the hidden positive would always rank first.
+The 99 unobserved anime are distractors: their preference labels are unknown.
+They provide the competing candidates for ranking.
 
 ### Candidate rules
 
@@ -201,15 +179,10 @@ A distractor must:
 - have no interaction row for that user
 - differ from the hidden positive
 
-Validation candidates use seed 42.
+Validation candidates use seed 42 and test candidates use seed 43.
+Content-based and model-based experiments use the same fixed candidate sets.
 
-Test candidates use seed 43.
-
-Every compared model receives the same fixed candidates.
-
----
-
-## 📏 What validation measures
+## What validation measures
 
 The model assigns a cosine-similarity score to all 100 candidates and sorts them.
 
@@ -239,15 +212,9 @@ Hidden positive rank  = 11
 
 This fails because ten candidates received higher scores.
 
-Validation therefore asks:
-
-> Which content configuration places the known hidden positive highest among the same 100 candidates?
-
 The configuration with the highest average validation NDCG@10 is selected.
 
----
-
-## 📊 Metrics
+## Metrics
 
 ### NDCG@10: primary metric
 
@@ -270,9 +237,7 @@ rank 11+   → miss
 
 Metrics are calculated per user and averaged, so every user has equal influence.
 
----
-
-## 🔒 Validation versus test
+## Validation versus test
 
 ### Validation
 
@@ -296,9 +261,7 @@ After one configuration is selected:
 
 The test result must not be used to choose another configuration.
 
----
-
-## ⚠️ What the experiment does and does not measure
+## Evaluation limits
 
 ### It measures
 
@@ -314,13 +277,9 @@ The test result must not be used to choose another configuration.
 
 An unobserved anime ranked above the hidden positive may actually be a good recommendation. The evaluator cannot verify it because no rating exists.
 
-This uncertainty is a limitation of offline recommendation datasets.
+## Prepared inputs
 
----
-
-## ✅ Data handed to the content system
-
-After preparation, the content-based system receives:
+The content-based system receives:
 
 | Data | Purpose |
 | --- | --- |
@@ -331,5 +290,3 @@ After preparation, the content-based system receives:
 | 60,384 eligible users | Shared evaluation population |
 | 7,223 warm anime | Shared candidate universe |
 | Anime metadata | Construct content vectors |
-
-At this boundary, no recommendation scores have been calculated yet.
